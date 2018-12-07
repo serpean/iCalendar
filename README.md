@@ -14,6 +14,19 @@ iCalendar implementation with a telegram bot
 1. Archivo - Clonar
 1. Ponemos el link del proyecto (https://github.com/serpean/iCalendar.git) en la primera casilla y en la segunda el path donde queremos ubicarlo. El resto lo dejamos por defecto.
 
+En el caso de que no querer utilizar SourceTree o cualqier otra GUI de Git, los pasos a seguir son:
+
+Crear la carpeta deseada para el proyecto y situarse en ella.
+```bash
+mkdir -p ~/code/iCalendar
+cd code ~/code/iCalendar
+```
+
+Clonar el proyecto de Git a local. Si se va a utilizar un branch propio es recomendable crearlo antes.
+```bash
+git clone https://github.com/serpean/iCalendar.git
+```
+
 ### How to work
 
 1. Os vais a master (doble click)
