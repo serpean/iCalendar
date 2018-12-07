@@ -1,0 +1,19 @@
+{
+  "name": "icalendar",
+  "version": "1.0.0",
+  "description": "iCalendar implementation with a telegram bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serpean/iCalendar.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/serpean/iCalendar/issues"
+  },
+  "homepage": "https://github.com/serpean/iCalendar#readme"
+}
