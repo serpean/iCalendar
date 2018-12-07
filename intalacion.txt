@@ -1,0 +1,17 @@
+Programas necesarios:
+- GIT GUI, usaremos SourceTree.
+- IDE, para Node podemos usar Visual Studio Code u otro similiar.
+
+Primeros pasos, descargando el repositorio:
+1.- Abrimos SourceTree
+2.- Archivo - Clonar
+3.- Ponemos el link del proyecto (https://github.com/serpean/iCalendar.git) en la primera casilla y en la segunda el path donde queremos ubicarlo. El resto lo dejamos por defecto.
+
+
+¿Como trabajar?
+- Os vais a master (doble click)
+- New branch con el nombre que querais
+- Trabajais ahí
+- Una vez terminas, haceis push
+- Lo testeamos un poco más
+- Hacemos merge con master
