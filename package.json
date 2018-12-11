@@ -12,6 +12,14 @@
   },
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "mongoose": "^5.3.15",
+    "node-telegram-bot-api": "^0.30.0",
+    "nodemailer": "^4.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.8"
+  },
   "bugs": {
     "url": "https://github.com/serpean/iCalendar/issues"
   },
