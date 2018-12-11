@@ -29,7 +29,7 @@ git clone https://github.com/serpean/iCalendar.git
 
 Crear un fichero config.json en el path raíz del proyecto con los siguientes parámetros:
 ```json
-  {
+{
   "EMAIL": "email",
   "EMAIL_PASSWORD": "password"
 }
