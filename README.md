@@ -27,6 +27,15 @@ Clonar el proyecto de Git a local. Si se va a utilizar un branch propio es recom
 git clone https://github.com/serpean/iCalendar.git
 ```
 
+Crear un fichero config.json en el path raíz del proyecto con los siguientes parámetros:
+```json
+  {
+  "EMAIL": "email",
+  "EMAIL_PASSWORD": "password"
+}
+
+```
+
 ### How to work
 
 1. Os vais a master (doble click)
