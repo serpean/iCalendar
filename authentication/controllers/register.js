@@ -49,7 +49,7 @@ const register = (telegramId, email, fn) => {
               Math.random()
                 .toString(36)
                 .substring(2, 15);
-            User.update(
+            User.updateOne(
               { _id: res.id },
               {
                 $set: {

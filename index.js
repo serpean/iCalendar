@@ -24,7 +24,6 @@ bot.onText(/\/register (.+)/, (msg, match) => {
 
 let confirmationToken;
 bot.onText(/\/confirm (.+)/, (msg, match) => {
-  // TODO: Verify real email
   confirmationToken = match[1];
   confirmUser(msg.from.id, confirmationToken, res => {
     bot.sendMessage(msg.chat.id, res);

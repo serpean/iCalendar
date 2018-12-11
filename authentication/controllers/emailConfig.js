@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const config = require("../../config.json");
 
 const sendEmail = (user, token) => {
   let transporter = nodemailer.createTransport({
@@ -6,8 +7,8 @@ const sendEmail = (user, token) => {
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "ssrjcalendar@gmail.com", // generated ethereal user
-      pass: "Serpean1" // generated ethereal password
+      user: config.EMAIL, // generated ethereal user
+      pass: config.EMAIL_PASSWORD // generated ethereal password
     }
   });
 
