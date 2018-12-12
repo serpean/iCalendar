@@ -1,6 +1,6 @@
 const fs = require("fs");
-const mongoose = require("mongoose");
-const TelegramBot = require("node-telegram-bot-api");
+// const mongoose = require("mongoose");
+// const TelegramBot = require("node-telegram-bot-api");
 
 function notifyConfigError(){
     console.log('Please update config.json with real data');
@@ -9,7 +9,8 @@ function notifyConfigError(){
 
 try {
     // Si no existe el archivo de configuración, se crea
-    fs.writeFileSync('config.json', '{"BOT_TOKEN": "token", "EMAIL": "email", "EMAIL_PASSWORD": "password"}', {flag: 'wx'});
+    fs.writeFileSync('config.json',
+        '{\n\t"BOT_TOKEN": "token",\n\t"EMAIL": "email",\n\t"EMAIL_PASSWORD": "password"\n}', {flag: 'wx'});
     notifyConfigError();
 } catch(e) {
     const config = require("./config.json");
