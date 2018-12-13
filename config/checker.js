@@ -35,25 +35,15 @@ function isConfigDefault() {
     }
 }
 
-/**
- *
- * @returns {Promise<any>}
- */
-checkConfiguration = () => {
-    return new Promise((resolve, reject) => {
-        let configFileNotFound = false;
+
+isConfigOK = () => {
         if (!existsConfigFile()) {
             copyDefaultConfig();
-            configFileNotFound = true;
+            return false;
         }
-
-        if(configFileNotFound || isConfigDefault()){
-            reject('Default configuration found. Please fill config/config.json with real data');
-        }
-        resolve('Configuration is ok');
-    });
+        return !isConfigDefault();
 };
 
 module.exports = {
-    checkConfiguration
+    isConfigOK
 };
