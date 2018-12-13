@@ -1,22 +1,12 @@
-const fs = require("fs");
-// const mongoose = require("mongoose");
-// const TelegramBot = require("node-telegram-bot-api");
+const mongoose = require("mongoose");
+const TelegramBot = require("node-telegram-bot-api");
+const { isConfigOK } = require("./config/checker");
 
-function notifyConfigError(){
-    console.log('Please update config.json with real data');
-    process.exit();
-}
-
-try {
-    // Si no existe el archivo de configuración, se crea
-    fs.writeFileSync('config.json',
-        '{\n\t"BOT_TOKEN": "token",\n\t"EMAIL": "email",\n\t"EMAIL_PASSWORD": "password"\n}', {flag: 'wx'});
-    notifyConfigError();
-} catch(e) {
+if(!isConfigOK()){
+    console.error('Please update config file with real data');
+    process.exit(1);
+} else {
     const config = require("./config/config.json");
-    if(config.BOT_TOKEN === "token" || config.EMAIL === "email") {
-        notifyConfigError()
-    }
 }
 
 const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
