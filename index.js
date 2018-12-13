@@ -18,7 +18,7 @@ const {
 } = require("./authentication/controllers/register");
 
 mongoose.connect(
-  "mongodb://localhost/icalendar",
+  config.MONGO_URI,
   { useNewUrlParser: true }
 );
 
