@@ -13,7 +13,7 @@ try {
         '{\n\t"BOT_TOKEN": "token",\n\t"EMAIL": "email",\n\t"EMAIL_PASSWORD": "password"\n}', {flag: 'wx'});
     notifyConfigError();
 } catch(e) {
-    const config = require("./config.json");
+    const config = require("./config/config.json");
     if(config.BOT_TOKEN === "token" || config.EMAIL === "email") {
         notifyConfigError()
     }
