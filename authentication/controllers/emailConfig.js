@@ -1,6 +1,16 @@
 const nodemailer = require("nodemailer");
 const config = require("../../config.json");
 
+/**
+ *
+ * @author serpean
+ */
+
+/**
+ *
+ * @param {Receiver email} user
+ * @param {Confirmed email} token
+ */
 const sendEmail = (user, token) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",

@@ -1,6 +1,12 @@
 const User = require("../models/user");
 const { sendEmail } = require("./emailConfig");
 
+/**
+ * Register a telegram user by ID and email
+ *
+ * @param {User telegram ID} telegramId
+ * @param {User email} email
+ */
 const register = (telegramId, email) => {
   return new Promise((resolve, reject) => {
     let TempUser = new User();
@@ -81,7 +87,12 @@ const register = (telegramId, email) => {
   });
 };
 
-// Confirma a un usuario dado un tokens
+/**
+ * Confirm a user give a token
+ *
+ * @param {Telegram User ID} telegramId
+ * @param {Confirm token} token
+ */
 const confirmUser = (telegramId, token) => {
   return new Promise((resolve, reject) => {
     User.findOne({ telegramId: telegramId }).exec((err, user) => {
@@ -113,11 +124,71 @@ const confirmUser = (telegramId, token) => {
   });
 };
 
-const changeEmail = email => {
-  // TBD
+/**
+ * Change User email give the Telegram ID
+ *
+ * @param {Telegram user new email} email
+ * @param {Telegram User ID}
+ */
+const changeEmail = (email, telegramId) => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ telegramId: telegramId }).exec((err, user) => {
+      if (err) return reject("No te has registrado todavía");
+      if (email === user.email) {
+      } else {
+        const expirationdate = new Date();
+        expirationdate.setDate(expirationdate.getDate() + 1);
+        const confirmationToken =
+          Math.random()
+            .toString(36)
+            .substring(2, 15) +
+          Math.random()
+            .toString(36)
+            .substring(2, 15);
+        if (user.confirmed) {
+          User.updateOne(
+            { _id: user.id },
+            {
+              $set: {
+                confirmed: false,
+                email: email,
+                confirmationToken: confirmationToken,
+                expirationDate: expirationdate
+              }
+            },
+            err => {
+              if (err) return reject("Error al actualizar");
+              sendEmail(email, confirmationToken);
+              return resolve(`Se acaba de confirmar tu email (${user.email})`);
+            }
+          );
+        } else {
+          User.updateOne(
+            { _id: user.id },
+            {
+              $set: {
+                email: email,
+                confirmationToken: confirmationToken,
+                expirationDate: expirationdate
+              }
+            },
+            err => {
+              if (err) return reject("Error al actualizar");
+              sendEmail(email, confirmationToken);
+              return resolve(`Se acaba de confirmar tu email (${user.email})`);
+            }
+          );
+        }
+      }
+    });
+  });
 };
 
-// TODO: this user can be used
+/**
+ * Get the email when the user is authenticated
+ *
+ * @param {Telegram User ID} telegramId
+ */
 const isAuth = telegramId => {
   return new Promise((resolve, reject) => {
     User.findOne({ telegramId: telegramId })
