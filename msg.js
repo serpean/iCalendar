@@ -11,114 +11,113 @@ module.exports.Calendar = class Calendar {
         };
         this.params = ['prodid', 'version', 'calscale', 'iana-property', 'x-property'];
         this.methods = ['publish', 'request', 'reply', 'add', 'cancel', 'refresh', 'counter', 'declinecounter'];
-        //this.events = ['vevent','vtodo','vjournal','vfreebusy'];
         this.events = {
             publish: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','summary','uid']
+                    required: ['dtstamp','dtstart','organizar','summary','uid'],
                     optional: ['recurrence-id','sequence','attach','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['dtstamp','dtstart','organizar','priority','summary','uid']
+                    required: ['dtstamp','dtstart','organizar','priority','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','completed','contact','created','description','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','rrule','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vfreebusy: {
-                    required: ['dtstamp','dtstart','dtend','organizer','uid']
+                    required: ['dtstamp','dtstart','dtend','organizer','uid'],
                     optional: ['freebusy','comment','contact','iana-property','x-property','url','iana-component','x-component']
-                };
+                },
                 vjournal: {
-                    required: ['description','dtstamp','dtstart','organizar','uid']
+                    required: ['description','dtstamp','dtstart','organizar','uid'],
                     optional: ['attach','categories','class','comment','contact','created','exdate','last-modified','rdate','recurrence-id','related-to','resources','rrule','sequence','status','summary','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            },
             request: {
                 vevent: {
-                    required: ['attendee','dtstamp','dtstart','organizar','summary','uid']
+                    required: ['attendee','dtstamp','dtstart','organizar','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['attendee','dtstamp','dtstart','organizar','priority','summary','uid']
+                    required: ['attendee','dtstamp','dtstart','organizar','priority','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','completed','contact','created','description','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','rrule','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vfreebusy: {
-                    required: ['attendee','dtend','dtstamp','dtstart','organizer','uid']
+                    required: ['attendee','dtend','dtstamp','dtstart','organizer','uid'],
                     optional: ['comment','contact','iana-property','x-property','iana-component','x-component']
-                };
-            };
+                },
+            },
             reply: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','uid']
+                    required: ['attendee','dtstamp','organizar','uid'],
                     optional: ['recurrence-id','sequence','attach','categories','class','comment','contact','created','description','dtend','dtstart','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['attendee','dtstamp','organizar','uid']
+                    required: ['attendee','dtstamp','organizar','uid'],
                     optional: ['request-status','attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','priority','rdate','related-to','resources','rrule','recurrence-id','sequence','status','summary','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                 vfreebusy: {
-                    required: ['attendee','dtstamp','dtend','dtstart','organizer','uid']
+                    required: ['attendee','dtstamp','dtend','dtstart','organizer','uid'],
                     optional: ['freebusy','comment','contact','iana-property','x-property','iana-component','x-component']
-                };
-            };
+                },
+            },
             add: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid']
+                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['dtstamp','organizar','priority','sequence','summary','uid']
+                    required: ['dtstamp','organizar','priority','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','completed','contact','created','description','dtstart','due','duration','geo','last-modified','location','percent-complete','related-to','resources','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vjournal: {
-                    required: ['description','dtstamp','dtstart','organizar','sequence','uid']
+                    required: ['description','dtstamp','dtstart','organizar','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','last-modified','related-to','status','summary','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            },
             cancel: {
                 vevent: {
-                    required: ['dtstamp','organizar','sequence','uid']
+                    required: ['dtstamp','organizar','sequence','uid'],
                     optional: ['attendee','comment','attach','categories','class','contact','created','description','dtend','dtstart','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['uid','dtstamp','organizar','sequence']
+                    required: ['uid','dtstamp','organizar','sequence'],
                     optional: ['attendee','attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','status','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                 vjournal: {
-                    required: ['dtstamp','organizar','sequence','uid']
+                    required: ['dtstamp','organizar','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','description','dtstart','exdate','last-modified','rdate','recurrence-id','related-to','rrule','status','summary','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            },
             refresh: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','uid']
+                    required: ['attendee','dtstamp','organizar','uid'],
                     optional: ['comment','recurrence-id','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['attendee','dtstamp','uid']
+                    required: ['attendee','dtstamp','uid'],
                     optional: ['recurrence-id','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            },
             counter: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid']
+                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','resources','request-status','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
+                },
                 vtodo: {
-                    required: ['attendee','dtstamp','organizar','priority','summary','uid']
+                    required: ['attendee','dtstamp','organizar','priority','summary','uid'],
                     optional: ['attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','request-status','resources','rrule','sequence','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            },
             declinecounter: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','sequence','uid']
+                    required: ['attendee','dtstamp','organizar','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','description','dtstart','dtend','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','request-status','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
+                },
                  vtodo: {
-                    required: ['attendee','dtstamp','organizar','sequence','uid']
+                    required: ['attendee','dtstamp','organizar','sequence','uid'],
                     optional: ['attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','priority','rdate','recurrence-id','related-to','request-status','resources','rrule','status','url','iana-property','x-property','vtimezone','iana-component','x-component']
-                };
-            };
+                },
+            }
         }
-    }
+    };
 
     /**
      * Adds a parameter into the VCALENDAR area
@@ -166,18 +165,18 @@ module.exports.Calendar = class Calendar {
     /**
      * Create a VEVENT with the required parameters
      * @param {Array} args Required parameters for the given method as an Array, see listVeventParam() for more details
-     * @return {boolean} True if all went fine or false if method unset or required parameters not filled properly
+     * @return {number|boolean} Identification of the VEVENT node just created or false if method unset or required parameters not filled properly
      */
     addVevent(args){
-        let method = this.getMethod();
+        const method = this.getMethod();
         if(!method) return false;
-        let req = this.events[method].vevent.required;
+        const req = this.events[method].vevent.required;
         if(req.length != args.length) return false;
         let res = {};
         for(let i = 0; i < args.length; i++) res[req[i]] = args[i];
         if(this.cal.vevent == undefined) this.cal.vevent = [];
-        this.cal.vevent.push(res);
-        return true;  
+        const id = this.cal.vevent.push(res);
+        return id-1;  
     }
 
     /**
@@ -229,7 +228,7 @@ module.exports.Calendar = class Calendar {
      * @return {JSON|string} JSON containing VEVENT parameters or a human-readable method
      */
     listVeventParam(){
-        let method = this.cal.method;
+        const method = this.cal.method;
         if(!method) return 'Select method first!';
         return this.events[method].vevent;
     }
@@ -239,7 +238,7 @@ module.exports.Calendar = class Calendar {
      * @return {JSON} JSON containing the current VCALENDAR
      */
     toJson(){
-        let res = {
+        const res = {
             vcalendar: this.cal
         };
         return res;
@@ -248,18 +247,18 @@ module.exports.Calendar = class Calendar {
     /**
      * Create a new VTODO with the required parameters
      * @param {Array} args Array with the required parameters, see listVtodoParam() for more details
-     * @return {boolean} True if all went fine or false if the array is not properly filled or there is no method set
+     * @return {number|boolean} Identifier of the just created VTODO node or false if the array is not properly filled or there is no method set
      */
     addVtodo(args){
-        let method = this.getMethod();
+        const method = this.getMethod();
         if(!method) return false;
-        let req = this.events[method].vtodo.required;
+        const req = this.events[method].vtodo.required;
         if(req.length != args.length) return false;
         let res = {};
         for(let i = 0; i < args.length; i++) res[req[i]] = args[i];
         if(this.cal.vtodo == undefined) this.cal.vtodo = [];
-        this.cal.vtodo.push(res);
-        return true;  
+        const id = this.cal.vtodo.push(res);
+        return id-1;  
     }
 
     /**
@@ -295,7 +294,7 @@ module.exports.Calendar = class Calendar {
      * @return {JSON|string} JSON cointaining all methods allowed or a human readable error
      */
     listVtodoParam(){
-        let method = this.cal.method;
+        const method = this.cal.method;
         if(!method) return 'Select method first!';
         return this.events[method].vtodo;
     }
@@ -303,25 +302,26 @@ module.exports.Calendar = class Calendar {
     /**
      * Adds a VFREE event with the required parameters and a method set
      * @param {Array} args Array containing the required parameters
-     * @return {boolean} False if there is no method or true if all went fine
+     * @return {number|boolean} Identifier of the VFREE node just created or false if there is no method
      */
     addVfree(args){
-        let method = this.getMethod();
+        const method = this.getMethod();
         if(!method) return false;
-        let req = this.events[method].vfreebusy.required;
+        const req = this.events[method].vfreebusy.required;
         if(req.length != args.length) return false;
         let res = {};
         for(let i = 0; i < args.length; i++) res[req[i]] = args[i];
         if(this.cal.vfreebusy == undefined) this.cal.vfreebusy = [];
-        this.cal.vfreebusy.push(res);
-        return true;  
+        const id = this.cal.vfreebusy.push(res);
+        return id-1;  
     }
 
     /**
-     * 
-     * @param {number} id 
-     * @param {string} name 
-     * @param {string} value 
+     * Set to a VFREE event the given paramenter
+     * @param {number} id Identification of the VFREE node
+     * @param {string} name Name of the parameter
+     * @param {string} value Value for the parameter name below
+     * @return {boolean} False if there is no VFREE/parameter name allowed or true if all went fine
      */
     setVfreeParam(id, name, value){
         if(this.events[method].vfreebusy.optional.indexOf(name) == -1) 
@@ -332,31 +332,52 @@ module.exports.Calendar = class Calendar {
         return true;
     }
 
+    /**
+     * Get a VFREE parameter value for the given name
+     * @param {number} id Identification of the VFREE node
+     * @param {string} name Name of the requested parameter
+     * @return {string|boolean} Value of the parameter or false if there is no parameter or VFREE node
+     */
     getVfreeParam(id,name){
         if(this.cal.vfreebusy == undefined || this.cal.vfreebusy.length <= id) return false;
         if(this.cal.vfreebusy[id][name] == undefined) return false;
         return this.cal.vfreebusy[id][name];
     }
 
+    /**
+     * List VFREE parameter for the set method
+     * @return {JSON|string} JSON containing all methods avaliables or a human readable error
+     */
     listVfreeParam(){
-        let method = this.cal.method;
+        const method = this.cal.method;
         if(!method) return 'Select method first!';
         return this.events[method].vfreebusy;
     }
 
-    //VJOURNAL
-
+    /**
+     * Add a VJOURNAL node with the required parameters
+     * @param {Array} args Array containing required parameters, see listVjournalParam() for more details
+     * @return {number|boolean} Identification of the just created VJOURNAL or false if parameters array is not properly filled
+     */
     addVjournal(args){
-        let method = this.getMethod();
+        const method = this.getMethod();
         if(!method) return false;
-        let req = this.events[method].vjournal.required;
+        const req = this.events[method].vjournal.required;
         if(req.length != args.length) return false;
         let res = {};
         for(let i = 0; i < args.length; i++) res[req[i]] = args[i];
         if(this.cal.vjournal == undefined) this.cal.vjournal = [];
-        this.cal.vjournal.push(res);
-        return true;  
+        const id = this.cal.vjournal.push(res);
+        return id-1;  
     }
+
+    /**
+     * Set a parameter into selected VJOURNAL with the given name and value pair
+     * @param {number} id Identification of the VJOURNAL node
+     * @param {string} name Name of the parameter
+     * @param {string} value Value of the parameter below
+     * @return {boolean} False if there is no VJOURNAL defined/parameter name not allowed or true if all went fine
+     */
     setVjournalParam(id, name, value){
         if(this.events[method].vjournal.optional.indexOf(name) == -1) 
             if(this.events[method].vjournal.required.indexOf(name) == -1)
@@ -366,15 +387,37 @@ module.exports.Calendar = class Calendar {
         return true;
     }
 
+    /**
+     * Get the parameter value for the selected VJOURNAL
+     * @param {number} id Identification of the VJOURNAL
+     * @param {string} name Name of the parameter
+     * @return {string|boolean} Value of the parameter or false if there is no parameter
+     */
     getVjournalParam(id,name){
         if(this.cal.vjournal == undefined || this.cal.vjournal.length <= id) return false;
         if(this.cal.vjournal[id][name] == undefined) return false;
         return this.cal.vjournal[id][name];
     }
 
+    /**
+     * List all allowed VJOURNAL parameter names for the set method
+     * @return {JSON|string} JSON containing parameter names or a human readable error
+     */
     listVjournalParam(){
-        let method = this.cal.method;
+        const method = this.cal.method;
         if(!method) return 'Select method first!';
         return this.events[method].vjournal;
+    }
+
+    /**
+     * Parse a stringfied JSON to a JCALENDAR object
+     * @param {string} jotason Stringfied JSON with an JCALENDAR valid format
+     * @return {boolean} False if it is not a valid JSON or true if all went fine
+     */
+    parseJSON(jotason) {
+        const json = JSON.parse(jotason);
+        if(json.vcalendar == undefined) return false;
+        this.vcalendar = json.vcalendar;
+        return true;
     }
 }
