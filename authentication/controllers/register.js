@@ -127,10 +127,10 @@ const confirmUser = (telegramId, token) => {
 /**
  * Change User email give the Telegram ID
  *
+ * @param {Telegram User ID} telegramId
  * @param {Telegram user new email} email
- * @param {Telegram User ID}
  */
-const changeEmail = (email, telegramId) => {
+const changeEmail = (telegramId, email) => {
   return new Promise((resolve, reject) => {
     User.findOne({ telegramId: telegramId }).exec((err, user) => {
       if (err) return reject("No te has registrado todavía");
@@ -159,7 +159,7 @@ const changeEmail = (email, telegramId) => {
             err => {
               if (err) return reject("Error al actualizar");
               sendEmail(email, confirmationToken);
-              return resolve(`Se acaba de confirmar tu email (${user.email})`);
+              return resolve(`Se acaba de cambiar tu email a ${email}`);
             }
           );
         } else {
@@ -175,7 +175,7 @@ const changeEmail = (email, telegramId) => {
             err => {
               if (err) return reject("Error al actualizar");
               sendEmail(email, confirmationToken);
-              return resolve(`Se acaba de confirmar tu email (${user.email})`);
+              return resolve(`Se acaba de cambiar tu email a ${email}`);
             }
           );
         }
@@ -208,5 +208,6 @@ const isAuth = telegramId => {
 module.exports = {
   register,
   confirmUser,
-  isAuth
+  isAuth,
+  changeEmail
 };

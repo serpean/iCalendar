@@ -6,7 +6,8 @@ const mongoose = require("mongoose");
 const {
   register,
   confirmUser,
-  isAuth
+  isAuth,
+  changeEmail
 } = require("./authentication/controllers/register");
 
 mongoose.connect(
@@ -19,6 +20,18 @@ bot.onText(/\/register (.+)/, (msg, match) => {
   // TODO: Verify real email
   email = match[1];
   register(msg.from.id, email)
+    .then(res => {
+      bot.sendMessage(msg.chat.id, res);
+    })
+    .catch(err => {
+      bot.sendMessage(msg.chat.id, err);
+    });
+});
+
+bot.onText(/\/changemail (.+)/, (msg, match) => {
+  // TODO: Verify real email
+  email = match[1];
+  changeEmail(msg.from.id, email)
     .then(res => {
       bot.sendMessage(msg.chat.id, res);
     })
