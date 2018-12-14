@@ -1,6 +1,16 @@
 const nodemailer = require("nodemailer");
 const config = require("../../config.json");
 
+/**
+ *
+ * @author serpean
+ */
+
+/**
+ *
+ * @param {Receiver email} user
+ * @param {Confirmed email} token
+ */
 const sendEmail = (user, token) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -26,8 +36,6 @@ const sendEmail = (user, token) => {
     if (error) {
       return console.log(error);
     }
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
   });
 };
 

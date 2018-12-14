@@ -4,7 +4,8 @@
   "description": "iCalendar implementation with a telegram bot",
   "main": "index.js",
   "scripts": {
-    "test": "npm start"
+    "test": "",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",

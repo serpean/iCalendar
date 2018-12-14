@@ -1,134 +1,213 @@
 const User = require("../models/user");
 const { sendEmail } = require("./emailConfig");
 
-const register = (telegramId, email, fn) => {
-  let TempUser = new User();
-  const expirationdate = new Date();
-  expirationdate.setDate(expirationdate.getDate() + 1);
-  TempUser.email = email;
-  TempUser.telegramId = telegramId;
-  TempUser.confirmationToken =
-    Math.random()
-      .toString(36)
-      .substring(2, 15) +
-    Math.random()
-      .toString(36)
-      .substring(2, 15);
-  TempUser.confirm = false;
-  TempUser.tokenExpirationDate = expirationdate;
+/**
+ * Register a telegram user by ID and email
+ *
+ * @param {User telegram ID} telegramId
+ * @param {User email} email
+ */
+const register = (telegramId, email) => {
+  return new Promise((resolve, reject) => {
+    let TempUser = new User();
+    const expirationdate = new Date();
+    expirationdate.setDate(expirationdate.getDate() + 1);
+    TempUser.email = email;
+    TempUser.telegramId = telegramId;
+    TempUser.confirmationToken =
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
+    TempUser.confirm = false;
+    TempUser.tokenExpirationDate = expirationdate;
 
-  // Search the email
-  User.findOne({ email: email })
-    .select("telegramId")
-    .exec((err, res) => {
-      // If we receive a different id, the email is in use
-      if (res) {
-        if (res.telegramId != telegramId)
-          return fn("Este email ya está en uso");
-        // If we receive the same account, you are registered
-        else if (res.telegramId == telegramId) return fn("Ya estás registrado");
-      }
-    });
+    // Search the email
+    User.findOne({ email: email })
+      .select("telegramId")
+      .exec((err, res) => {
+        // If we receive a different id, the email is in use
+        if (res) {
+          if (res.telegramId != telegramId)
+            return reject("Este email ya está en uso");
+          // If we receive the same account, you are registered
+          else if (res.telegramId == telegramId)
+            return reject("Ya estás registrado");
+        }
+      });
 
-  User.findOne({ telegramId: telegramId })
-    .select("_id confirm email confirmationToken tokenExpirationDate")
-    .exec((err, res) => {
-      console.log(res);
-      if (res) {
-        if (res.confirm) return fn("Tu cuenta ya está confirmado");
-        else if (res.email == email) {
-          const now = new Date();
-          if (res.tokenExpirationDate < now) {
-            sendEmail(email, res.confirmationToken);
-          } else {
-            const expirationDate = now.getDate() + 1;
-            const confirmationToken =
-              Math.random()
-                .toString(36)
-                .substring(2, 15) +
-              Math.random()
-                .toString(36)
-                .substring(2, 15);
-            User.updateOne(
-              { _id: res.id },
-              {
-                $set: {
-                  tokenExpirationDate: expirationDate,
-                  confirmationToken: confirmationToken
+    User.findOne({ telegramId: telegramId })
+      .select("_id confirm email confirmationToken tokenExpirationDate")
+      .exec((err, res) => {
+        if (res) {
+          if (res.confirm) return resolve("Tu cuenta ya está confirmado");
+          else if (res.email == email) {
+            const now = new Date();
+            if (res.tokenExpirationDate < now) {
+              sendEmail(email, res.confirmationToken);
+            } else {
+              const expirationDate = now.getDate() + 1;
+              const confirmationToken =
+                Math.random()
+                  .toString(36)
+                  .substring(2, 15) +
+                Math.random()
+                  .toString(36)
+                  .substring(2, 15);
+              User.updateOne(
+                { _id: res.id },
+                {
+                  $set: {
+                    tokenExpirationDate: expirationDate,
+                    confirmationToken: confirmationToken
+                  }
+                },
+                (err, token) => {
+                  if (err) reject("Error al actualizar");
+                  sendEmail(email, confirmationToken);
+                  return resolve(
+                    "Estás registrado pero no confirmado, te hemos mandado un email a " +
+                      email
+                  );
                 }
-              },
-              (err, token) => {
-                if (err) console.log("Error al actualizar");
-                sendEmail(email, confirmationToken);
-                return fn(
-                  "Estás registrado pero no confirmado, te hemos mandado un email a " +
-                    email
-                );
-              }
-            );
+              );
+            }
           }
         }
-      }
-    });
-
-  TempUser.save(err => {
-    // if (err) return fn("El email: " + email + " ya está en uso");
-    if (err) return;
-    sendEmail(email, TempUser.confirmationToken);
-    return fn("Usario " + telegramId + " con email: " + email + " fue creado");
+        TempUser.save(err => {
+          if (err) return reject("El email: " + email + " ya está en uso");
+          sendEmail(email, TempUser.confirmationToken);
+          return resolve(
+            "Usario " + telegramId + " con email: " + email + " fue creado"
+          );
+        });
+      });
   });
 };
 
-// Confirma a un usuario dado un tokens
-const confirmUser = (telegramId, token, fn) => {
-  User.findOne({ telegramId: telegramId }).exec((err, user) => {
-    console.log(user);
-    if (!user) return fn("Primero debes registrarte (/ register <email>)");
-    else if (user.confirmed)
-      return fn("Tu cuenta está registrada y confirmada");
-    else if (user.tokenExpirationDate < new Date())
-      return fn("Tu token ha expirado, vuelve a registrate con el mismo email");
-    else if (user.confirmationToken === token) {
-      User.updateOne(
-        { _id: user.id },
-        {
-          $set: {
-            confirmed: true
+/**
+ * Confirm a user give a token
+ *
+ * @param {Telegram User ID} telegramId
+ * @param {Confirm token} token
+ */
+const confirmUser = (telegramId, token) => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ telegramId: telegramId }).exec((err, user) => {
+      if (!user)
+        return reject("Primero debes registrarte (/ register <email>)");
+      else if (user.confirmed)
+        return reject("Tu cuenta está registrada y confirmada");
+      else if (user.tokenExpirationDate < new Date())
+        return reject(
+          "Tu token ha expirado, vuelve a registrate con el mismo email"
+        );
+      else if (user.confirmationToken === token) {
+        User.updateOne(
+          { _id: user.id },
+          {
+            $set: {
+              confirmed: true
+            }
+          },
+          err => {
+            if (err) return reject("Error al actualizar");
+            return resolve(`Se acaba de confirmar tu email (${user.email})`);
           }
-        },
-        err => {
-          if (err) return console.log("Error al actualizar");
-          return fn(`Se acaba de confirmar tu email (${user.email})`);
-        }
-      );
-    } else {
-      return fn("El token introducido es no es correcto");
-    }
-  });
-};
-
-const changeEmail = email => {
-  // TBD
-};
-
-// TODO: this user can be used
-const isAuth = (telegramId, fn) => {
-  User.findOne({ telegramId: telegramId })
-    .select("email confirmed")
-    .exec((err, res) => {
-      if (err) return fn(false);
-      console.log(res);
-      if (!res) return fn(false);
-      if (res.confirmed) {
-        return fn(res.email);
+        );
       } else {
-        fn(false);
+        return reject("El token introducido es no es correcto");
       }
     });
+  });
+};
+
+/**
+ * Change User email give the Telegram ID
+ *
+ * @param {Telegram User ID} telegramId
+ * @param {Telegram user new email} email
+ */
+const changeEmail = (telegramId, email) => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ telegramId: telegramId }).exec((err, user) => {
+      if (err) return reject("No te has registrado todavía");
+      if (email === user.email) {
+      } else {
+        const expirationdate = new Date();
+        expirationdate.setDate(expirationdate.getDate() + 1);
+        const confirmationToken =
+          Math.random()
+            .toString(36)
+            .substring(2, 15) +
+          Math.random()
+            .toString(36)
+            .substring(2, 15);
+        if (user.confirmed) {
+          User.updateOne(
+            { _id: user.id },
+            {
+              $set: {
+                confirmed: false,
+                email: email,
+                confirmationToken: confirmationToken,
+                expirationDate: expirationdate
+              }
+            },
+            err => {
+              if (err) return reject("Error al actualizar");
+              sendEmail(email, confirmationToken);
+              return resolve(`Se acaba de cambiar tu email a ${email}`);
+            }
+          );
+        } else {
+          User.updateOne(
+            { _id: user.id },
+            {
+              $set: {
+                email: email,
+                confirmationToken: confirmationToken,
+                expirationDate: expirationdate
+              }
+            },
+            err => {
+              if (err) return reject("Error al actualizar");
+              sendEmail(email, confirmationToken);
+              return resolve(`Se acaba de cambiar tu email a ${email}`);
+            }
+          );
+        }
+      }
+    });
+  });
+};
+
+/**
+ * Get the email when the user is authenticated
+ *
+ * @param {Telegram User ID} telegramId
+ */
+const isAuth = telegramId => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ telegramId: telegramId })
+      .select("email confirmed")
+      .exec((err, res) => {
+        if (err) return reject("No tienes permisos");
+        if (!res) return reject("No tienes permisos");
+        if (res.confirmed) {
+          return resolve(res.email);
+        } else {
+          reject("No tienes permisos");
+        }
+      });
+  });
 };
 
 module.exports = {
   register,
   confirmUser,
-  isAuth
+  isAuth,
+  changeEmail
 };
