@@ -1,27 +1,11 @@
 {
-  "name": "icalendar",
-  "version": "0.1.0",
-  "description": "iCalendar implementation with a telegram bot",
-  "main": "index.js",
+  "name": "misiesan",
+  "version": "1.0.0",
+  "description": "Creacion de los mensajes en formato jCal",
+  "main": "msg.js",
   "scripts": {
-    "test": "npm start"
+    "test": "node msgtest.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/serpean/iCalendar.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "mongoose": "^5.3.15",
-    "node-telegram-bot-api": "^0.30.0",
-    "nodemailer": "^4.7.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.18.8"
-  },
-  "bugs": {
-    "url": "https://github.com/serpean/iCalendar/issues"
-  },
-  "homepage": "https://github.com/serpean/iCalendar#readme"
+  "author": "Levsor and Bullcaos",
+  "license": "MIT"
 }
