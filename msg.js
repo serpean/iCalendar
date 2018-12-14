@@ -226,7 +226,7 @@ module.exports.Calendar = class Calendar {
 
     /**
      * List of VEVENT parameters for the setted method
-     * @return {Array|string} Array containing VEVENT parameters or a human-readable method
+     * @return {JSON|string} JSON containing VEVENT parameters or a human-readable method
      */
     listVeventParam(){
         let method = this.cal.method;
@@ -290,14 +290,21 @@ module.exports.Calendar = class Calendar {
         return this.cal.vtodo[id][name];
     }
 
+    /**
+     * List all allowed VTODO parameters for the method set
+     * @return {JSON|string} JSON cointaining all methods allowed or a human readable error
+     */
     listVtodoParam(){
         let method = this.cal.method;
         if(!method) return 'Select method first!';
         return this.events[method].vtodo;
     }
 
-    //VFREEBUSY
-
+    /**
+     * Adds a VFREE event with the required parameters and a method set
+     * @param {Array} args Array containing the required parameters
+     * @return {boolean} False if there is no method or true if all went fine
+     */
     addVfree(args){
         let method = this.getMethod();
         if(!method) return false;
@@ -309,6 +316,13 @@ module.exports.Calendar = class Calendar {
         this.cal.vfreebusy.push(res);
         return true;  
     }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {string} name 
+     * @param {string} value 
+     */
     setVfreeParam(id, name, value){
         if(this.events[method].vfreebusy.optional.indexOf(name) == -1) 
             if(this.events[method].vfreebusy.required.indexOf(name) == -1)
