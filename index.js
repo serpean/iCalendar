@@ -18,25 +18,33 @@ let email;
 bot.onText(/\/register (.+)/, (msg, match) => {
   // TODO: Verify real email
   email = match[1];
-  register(msg.from.id, email, res => {
-    bot.sendMessage(msg.chat.id, res);
-  });
+  register(msg.from.id, email)
+    .then(res => {
+      bot.sendMessage(msg.chat.id, res);
+    })
+    .catch(err => {
+      bot.sendMessage(msg.chat.id, err);
+    });
 });
 
 let confirmationToken;
 bot.onText(/\/confirm (.+)/, (msg, match) => {
   confirmationToken = match[1];
-  confirmUser(msg.from.id, confirmationToken, res => {
-    bot.sendMessage(msg.chat.id, res);
-  });
+  confirmUser(msg.from.id, confirmationToken)
+    .then(res => {
+      bot.sendMessage(msg.chat.id, res);
+    })
+    .catch(err => {
+      bot.sendMessage(msg.chat.id, err);
+    });
 });
 
 bot.onText(/\/prueba/, msg => {
-  isAuth(msg.chat.id, auth => {
-    if (auth) {
+  isAuth(msg.chat.id)
+    .then(auth => {
       return bot.sendMessage(msg.chat.id, "Tu email es " + auth);
-    } else {
-      return bot.sendMessage(msg.chat.id, "No puedes pasar");
-    }
-  });
+    })
+    .catch(err => {
+      return bot.sendMessage(msg.chat.id, err);
+    });
 });
