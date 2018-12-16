@@ -61,7 +61,7 @@ bot.onText(/\/prueba/, msg => {
     });
 });*/
 const Calendar = require('./calendarUI/calendarUI');
-
+const methods = require("./methods.js");
 const Telegraf = require('telegraf')
 const Composer = require('telegraf/composer')
 const session = require('telegraf/session')
@@ -144,7 +144,7 @@ stepTituloAddEventHandler,
     (ctx) => {
       ctx.reply('Evento `' + ctx.scene.session.infoEvent[2] + '` creado el día `' + ctx.scene.session.infoEvent[0] + '`')
       //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[2], Fecha = dtsart = infoEvent[0], Email = organiser = infoEvent[1]
-      vEventPub(infoEvent[0], infoEvent[1], infoEvent[2])
+      methods.vEventPub(infoEvent[0], infoEvent[1], infoEvent[2])
       return ctx.scene.leave()
     }
 ) 
