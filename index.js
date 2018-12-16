@@ -81,7 +81,7 @@ bot.command("addevent", ctx =>
 
 const stepTituloAddEventHandler = new Composer()
 stepTituloAddEventHandler.use((ctx) => {
-  ctx.scene.session.infoEvent[3] = ctx.message.text;
+  ctx.scene.session.infoEvent[2] = ctx.message.text;
   ctx.replyWithMarkdown('El Título es:`' + ctx.message.text + '`', Markup.inlineKeyboard([
     Markup.callbackButton('➡️ Correcto', 'next')
 ]).extra())
@@ -91,7 +91,7 @@ stepTituloAddEventHandler.use((ctx) => {
 const calendarHandler = new Composer()
 calendarHandler.action(/calendar-telegram-date-[\d-]+/g, ctx => {
     let date = ctx.match[0].replace("calendar-telegram-date-", "");
-    ctx.scene.session.infoEvent[1] = date;
+    ctx.scene.session.infoEvent[0] = date;
     ctx.replyWithMarkdown('La Fecha es:`' + date + '`', Markup.inlineKeyboard([
       Markup.callbackButton('➡️ Correcto', 'next')
   ]).extra())
@@ -100,19 +100,21 @@ calendarHandler.action(/calendar-telegram-date-[\d-]+/g, ctx => {
 
 const addEventWizard = new WizardScene('addevent-wizard',
 (ctx) => {
-  ctx.scene.session.infoEvent = ['dtstamp','dtstart','organizer','summary','uid']
+  //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
+  ctx.scene.session.infoEvent = ['dtstart','organizer','summary']
   /*
   isAuth(msg.chat.id)
   .then(auth => {
-    ctx.scene.session.infoEvent[2] = auth;
+    ctx.scene.session.infoEvent[1] = auth;
     return ctx.wizard.next()
   })
   .catch(err => {
     ctx.reply("Debes de estar autenticado para realizar esta acción")
     return ctx.scene.leave()
   });*/
-  //Estas dos lineas se borran cuando funcione lo de arriba
+  //Estas tres lineas se borran cuando funcione lo de arriba
   ctx.reply("Todo Correcto. Indica el Título del Evento")
+  ctx.scene.session.infoEvent[1] = 'john@d.oe'
   return ctx.wizard.next();
 },
 stepTituloAddEventHandler,
@@ -140,8 +142,9 @@ stepTituloAddEventHandler,
     calendarHandler
     ,
     (ctx) => {
-      ctx.reply('Evento `' + ctx.scene.session.infoEvent[3] + '` creado el día `' + ctx.scene.session.infoEvent[1] + '`')
-      //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[3], Fecha = dtsart = infoEvent[1], Email = organiser = infoEvent[2]
+      ctx.reply('Evento `' + ctx.scene.session.infoEvent[2] + '` creado el día `' + ctx.scene.session.infoEvent[0] + '`')
+      //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[2], Fecha = dtsart = infoEvent[0], Email = organiser = infoEvent[1]
+      vEventPub(infoEvent[0], infoEvent[1], infoEvent[2])
       return ctx.scene.leave()
     }
 ) 
