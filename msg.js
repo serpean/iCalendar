@@ -14,11 +14,11 @@ module.exports.Calendar = class Calendar {
         this.events = {
             publish: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','summary','uid'],
+                    required: ['dtstamp','dtstart','organizer','summary','uid'],
                     optional: ['recurrence-id','sequence','attach','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['dtstamp','dtstart','organizar','priority','summary','uid'],
+                    required: ['dtstamp','dtstart','organizer','priority','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','completed','contact','created','description','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','rrule','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vfreebusy: {
@@ -26,17 +26,17 @@ module.exports.Calendar = class Calendar {
                     optional: ['freebusy','comment','contact','iana-property','x-property','url','iana-component','x-component']
                 },
                 vjournal: {
-                    required: ['description','dtstamp','dtstart','organizar','uid'],
+                    required: ['description','dtstamp','dtstart','organizer','uid'],
                     optional: ['attach','categories','class','comment','contact','created','exdate','last-modified','rdate','recurrence-id','related-to','resources','rrule','sequence','status','summary','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
             },
             request: {
                 vevent: {
-                    required: ['attendee','dtstamp','dtstart','organizar','summary','uid'],
+                    required: ['attendee','dtstamp','dtstart','organizer','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['attendee','dtstamp','dtstart','organizar','priority','summary','uid'],
+                    required: ['attendee','dtstamp','dtstart','organizer','priority','summary','uid'],
                     optional: ['sequence','attach','categories','class','comment','completed','contact','created','description','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','rrule','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vfreebusy: {
@@ -46,11 +46,11 @@ module.exports.Calendar = class Calendar {
             },
             reply: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','uid'],
+                    required: ['attendee','dtstamp','organizer','uid'],
                     optional: ['recurrence-id','sequence','attach','categories','class','comment','contact','created','description','dtend','dtstart','duration','exdate','geo','last-modified','location','priority','rdate','related-to','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['attendee','dtstamp','organizar','uid'],
+                    required: ['attendee','dtstamp','organizer','uid'],
                     optional: ['request-status','attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','priority','rdate','related-to','resources','rrule','recurrence-id','sequence','status','summary','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                 vfreebusy: {
@@ -60,35 +60,35 @@ module.exports.Calendar = class Calendar {
             },
             add: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid'],
+                    required: ['dtstamp','dtstart','organizer','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','related-to','resources','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['dtstamp','organizar','priority','sequence','summary','uid'],
+                    required: ['dtstamp','organizer','priority','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','completed','contact','created','description','dtstart','due','duration','geo','last-modified','location','percent-complete','related-to','resources','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vjournal: {
-                    required: ['description','dtstamp','dtstart','organizar','sequence','uid'],
+                    required: ['description','dtstamp','dtstart','organizer','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','last-modified','related-to','status','summary','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
             },
             cancel: {
                 vevent: {
-                    required: ['dtstamp','organizar','sequence','uid'],
+                    required: ['dtstamp','organizer','sequence','uid'],
                     optional: ['attendee','comment','attach','categories','class','contact','created','description','dtend','dtstart','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['uid','dtstamp','organizar','sequence'],
+                    required: ['uid','dtstamp','organizer','sequence'],
                     optional: ['attendee','attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','resources','status','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                 vjournal: {
-                    required: ['dtstamp','organizar','sequence','uid'],
+                    required: ['dtstamp','organizer','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','description','dtstart','exdate','last-modified','rdate','recurrence-id','related-to','rrule','status','summary','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
             },
             refresh: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','uid'],
+                    required: ['attendee','dtstamp','organizer','uid'],
                     optional: ['comment','recurrence-id','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
@@ -98,21 +98,21 @@ module.exports.Calendar = class Calendar {
             },
             counter: {
                 vevent: {
-                    required: ['dtstamp','dtstart','organizar','sequence','summary','uid'],
+                    required: ['dtstamp','dtstart','organizer','sequence','summary','uid'],
                     optional: ['attach','attendee','categories','class','comment','contact','created','description','dtend','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','resources','request-status','rrule','status','transp','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
                 vtodo: {
-                    required: ['attendee','dtstamp','organizar','priority','summary','uid'],
+                    required: ['attendee','dtstamp','organizer','priority','summary','uid'],
                     optional: ['attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','rdate','recurrence-id','related-to','request-status','resources','rrule','sequence','status','url','iana-property','x-property','valarm','vtimezone','iana-component','x-component']
                 },
             },
             declinecounter: {
                 vevent: {
-                    required: ['attendee','dtstamp','organizar','sequence','uid'],
+                    required: ['attendee','dtstamp','organizer','sequence','uid'],
                     optional: ['attach','categories','class','comment','contact','created','description','dtstart','dtend','duration','exdate','geo','last-modified','location','priority','rdate','recurrence-id','related-to','request-status','resources','rrule','status','summary','transp','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
                  vtodo: {
-                    required: ['attendee','dtstamp','organizar','sequence','uid'],
+                    required: ['attendee','dtstamp','organizer','sequence','uid'],
                     optional: ['attach','categories','class','comment','completed','contact','created','description','dtstart','due','duration','exdate','geo','last-modified','location','percent-complete','priority','rdate','recurrence-id','related-to','request-status','resources','rrule','status','url','iana-property','x-property','vtimezone','iana-component','x-component']
                 },
             }
