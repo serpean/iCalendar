@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const VfreebusySchema = new Schema({
-  uid: { type: String, unique: true, require: true, dropDups: true },
+  uid: { type: Number, unique: true, require: true, dropDups: true },
   organizer: String,
   atendee: String,
   dtstamp: String,
