@@ -1,9 +1,9 @@
 const msg = require("./msg.js");
 
-const cal = new msg.Calendar('serpean1', 1.0);
 //'publish', 'request', 'reply', 'add', 'cancel', 'refresh', 'counter', 'declinecounter'
 
 function vEventPub(dtstart, organizer, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('publish');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -14,6 +14,7 @@ function vEventPub(dtstart, organizer, summary) {
 }
 
 function vTodoPub(dtstart, organizer, priority, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('publish');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -24,6 +25,7 @@ function vTodoPub(dtstart, organizer, priority, summary) {
 }
 
 function vFreebusyPub(dtstart, dtend, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('publish');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -34,6 +36,7 @@ function vFreebusyPub(dtstart, dtend, organizer) {
 }
 
 function vJournalPub(description, dtstart, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('publish');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -44,6 +47,7 @@ function vJournalPub(description, dtstart, organizer) {
 }
 
 function vEventReq(attendee, dtstart, organizer, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('request');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -54,6 +58,7 @@ function vEventReq(attendee, dtstart, organizer, summary) {
 }
 
 function vTodoReq(attendee, dtstart, organizer, priority, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('request');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -64,6 +69,7 @@ function vTodoReq(attendee, dtstart, organizer, priority, summary) {
 }
 
 function vFreebusyReq(attendee, dtend, dtstart, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('request');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -74,6 +80,7 @@ function vFreebusyReq(attendee, dtend, dtstart, organizer) {
 }
 
 function vEventRep(attendee, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('reply');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -84,6 +91,7 @@ function vEventRep(attendee, organizer) {
 }
 
 function vTodoRep(attendee, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('reply');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -94,6 +102,7 @@ function vTodoRep(attendee, organizer) {
 }
 
 function vFreebusyRep(attendee, dtend, dtstart, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('reply');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -104,6 +113,7 @@ function vFreebusyRep(attendee, dtend, dtstart, organizer) {
 }
 
 function vEventAdd(dtstart, organizer, sequence, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('add');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -114,6 +124,7 @@ function vEventAdd(dtstart, organizer, sequence, summary) {
 }
 
 function vTodoAdd(organizer, priority, sequence, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('add');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -124,6 +135,7 @@ function vTodoAdd(organizer, priority, sequence, summary) {
 }
 
 function vJournalAdd(description, dtstart, organizer, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('add');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -134,6 +146,7 @@ function vJournalAdd(description, dtstart, organizer, sequence) {
 }
 
 function vEventCancel(organizer, sequence, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('cancel');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -144,6 +157,7 @@ function vEventCancel(organizer, sequence, sequence) {
 }
 
 function vTodoCancel(organizer, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('cancel');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -154,6 +168,7 @@ function vTodoCancel(organizer, sequence) {
 }
 
 function vJournalCancel(organizer, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('cancel');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -164,6 +179,7 @@ function vJournalCancel(organizer, sequence) {
 }
 
 function vEventRefresh(attendee, organizer) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('refresh');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -174,6 +190,7 @@ function vEventRefresh(attendee, organizer) {
 }
 
 function vTodoRefresh(attendee) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('refresh');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -184,6 +201,7 @@ function vTodoRefresh(attendee) {
 }
 
 function vEventCounter(dtstart, organizer, sequence, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('counter');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -194,6 +212,7 @@ function vEventCounter(dtstart, organizer, sequence, summary) {
 }
 
 function vTodoCounter(attendee, organizer, priority, summary) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('counter');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -204,6 +223,7 @@ function vTodoCounter(attendee, organizer, priority, summary) {
 }
 
 function vEventDC(attendee, organizer, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('declinecounter');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -214,6 +234,7 @@ function vEventDC(attendee, organizer, sequence) {
 }
 
 function vTodoDC(attendee, organizer, sequence) {
+    const cal = new msg.Calendar('tempcal', 1.0);
     cal.setMethod('declinecounter');
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -222,3 +243,5 @@ function vTodoDC(attendee, organizer, sequence) {
     const lastEvent = ev[ev.length - 1];
     return lastEvent;
 }
+
+module.exports = {vEventAdd, vEventCancel, vEventCounter, vEventDC, vEventPub, vEventRefresh, vEventRep, vEventReq, vFreebusyPub, vFreebusyRep, vFreebusyReq, vTodoAdd, vTodoCancel, vTodoCounter, vTodoDC, vTodoPub, vTodoRefresh, vTodoRep, vTodoReq, vJournalAdd, vJournalCancel, vJournalPub};
