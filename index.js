@@ -68,6 +68,8 @@ const session = require('telegraf/session')
 const Stage = require('telegraf/stage')
 const Markup = require('telegraf/markup')
 const WizardScene = require('telegraf/scenes/wizard')
+const Router = require('telegraf/router')
+const Extra = require('telegraf/extra')
 
 const bot = new Telegraf(token);
 
@@ -97,6 +99,79 @@ calendarHandler.action(/calendar-telegram-date-[\d-]+/g, ctx => {
   ]).extra())
     return ctx.wizard.next()
 });
+
+const hourPickerUI = Extra
+  .HTML()
+  .markup((m) => m.inlineKeyboard([
+    m.callbackButton('1', 'hour:01'),
+    m.callbackButton('2', 'hour:02'),
+    m.callbackButton('3', 'hour:03'),
+    m.callbackButton('4', 'hour:04'),
+    m.callbackButton('5', 'hour:05'),
+    m.callbackButton('6', 'hour:06'),
+    m.callbackButton('7', 'hour:07'),
+    m.callbackButton('8', 'hour:08'),
+    m.callbackButton('9', 'hour:09'),
+    m.callbackButton('10', 'hour:10'),
+    m.callbackButton('11', 'hour:11'),
+    m.callbackButton('12', 'hour:12'),
+    m.callbackButton('AM', 'mode:AM'),
+    m.callbackButton('PM', 'mode:PM'),
+    m.callbackButton('00', 'min:00'),
+    m.callbackButton('15', 'min:15'),
+    m.callbackButton('30', 'min:30'),
+    m.callbackButton('45', 'min:45'),
+    m.callbackButton('Clear', 'clear'),
+    m.callbackButton('Ok', 'ok')
+], { columns: 3 }))
+
+const hourPicker = new Router(({ callbackQuery }) => {
+  if (!callbackQuery.data) {
+    return
+  }
+  const parts = callbackQuery.data.split(':')
+  return {
+    route: parts[0],
+    state: {
+      value: parts[1]
+    }
+  }
+})
+calculator.on('hour', (ctx) => {
+  ctx.scene.session.hour = ctx.state.value
+  return editTime(ctx)
+})
+calculator.on('min', (ctx) => {
+  ctx.scene.session.min = ctx.state.value
+  return editTime(ctx)
+})
+calculator.on('mode', (ctx) => {
+  ctx.scene.session.mode = ctx.state.value
+  return editTime(ctx)
+})
+calculator.on('clear', (ctx) => {
+  ctx.scene.session.hour = "08"
+  ctx.scene.session.min = "00"
+  ctx.scene.session.mode = "AM"
+  return editTime(ctx)
+})
+calculator.on('ok', (ctx) => {
+  if (ctx.scene.session.mode.match("PM")) {
+    const hour = (parseInt(ctx.scene.session.hour, 10) || 0)
+    hour += 12
+    ctx.scene.session.hour = hour
+  }
+  ctx.scene.session.infoEvent[0] = ctx.scene.session.infoEvent[0]+ctx.scene.session.hour + ctx.scene.session.min + "00" + "Z"
+  editTime(ctx)
+  return ctx.wizard.next()
+})
+
+function editTime (ctx) {
+  return ctx.editMessageText(`Tiempo: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI).catch(() => undefined)
+}
+
+const timeHandler = new Composer()
+timeHandler.on('callback_query', hourPicker); 
 
 const addEventWizard = new WizardScene('addevent-wizard',
 (ctx) => {
@@ -140,6 +215,14 @@ stepTituloAddEventHandler,
       return ctx.wizard.next()
     },
     calendarHandler
+    ,
+    (ctx) => {
+      ctx.scene.session.hour = "08"
+      ctx.scene.session.min = "00"
+      ctx.scene.session.mode = "AM"
+      ctx.reply('Elige la hora del Evento')
+      ctx.reply(`Tiempo: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI)
+    }
     ,
     (ctx) => {
       ctx.reply('Evento `' + ctx.scene.session.infoEvent[2] + '` creado el día `' + ctx.scene.session.infoEvent[0] + '`')
