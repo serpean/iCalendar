@@ -28,7 +28,7 @@ const bot = new Telegraf(token);
 let email;
 bot.command("register", ctx => {
   // TODO: Verify real email
-  email = ctx.match[1];
+  email = ctx.message.text.split(" ")[1];
   register(ctx.from.id, email)
     .then(res => {
       ctx.reply(res);
@@ -40,7 +40,7 @@ bot.command("register", ctx => {
 
 bot.command("changemail", ctx => {
   // TODO: Verify real email
-  email = ctx.match[1];
+  email = ctx.message.text.split(" ")[1];
   changeEmail(ctx.from.id, email)
     .then(res => {
       ctx.reply(res);
@@ -52,7 +52,7 @@ bot.command("changemail", ctx => {
 
 let confirmationToken;
 bot.command("confirm", ctx => {
-  confirmationToken = ctx.match[1];
+  confirmationToken = ctx.message.text.split(" ")[1];
   confirmUser(msg.from.id, confirmationToken)
     .then(res => {
       ctx.reply(res);
