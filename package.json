@@ -14,9 +14,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.5.3",
     "mongoose": "^5.3.15",
-    "node-telegram-bot-api": "^0.30.0",
-    "nodemailer": "^4.7.0"
+    "node-telegram-bot-api": "^0.30.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.8"

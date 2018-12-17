@@ -1,31 +1,38 @@
 const Jcal = require('../msg');
 const config = require("../config.json");
-const mailer = require('nodemailer');
+
+//Some parameters for the AMQP connection
+const topic = 'publish';
+var channel;
+
+//Connection to the AMQP queue
+var amqp = require('amqplib').connect(config.CUADM);
+amqp.then((ch) => {
+    return ch.createChannel();
+}).then((ch) => {
+    ch.assertQueue(topic);
+    channel = ch;
+}).catch(console.warn);
 
 /**
- * Mail sender for the jCalendar prepared
+ * Send PUBLISH jCalendar objects to a AMQP compatible queue
  * @param {JSON} jcal JCalendar object prepared
  * @param {string} dest Recipient and attendant of the event
  * @param {string} method Kind of event to process
  */
 function sendMail(jcal, dest, method){
-    let uid, msg;
+    let msg;
     switch(method){
         case 'event':
             jcal.setVeventParam(0, 'attendees', dest);
-            uid = jcal.getVeventParam(0, 'uid');
             msg = JSON.stringify(jcal.toJson());
             break;
     }
-    let mail = mailer.createTransport(config.mailer);
     const message = {
-        from: config.msg.from,
-        to: dest,
-        subject: 'PUBLISH: New event posted in your calendar (' + uid + ')',
-        text: msg,
-        html: '<pre>' + msg + '</pre>'
+        recipient: dest,
+        event: msg
     };
-    mail.sendMail(message);
+    channel.sendToQueue(topic, Buffer.from(JSON.stringify(message)));
     switch(method){
         case 'event':
             jcal.setVeventParam(0, 'attendees', '');
