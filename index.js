@@ -85,8 +85,10 @@ const stepTituloAddEventHandler = new Composer()
 stepTituloAddEventHandler.use((ctx) => {
   ctx.scene.session.infoEvent[2] = ctx.message.text;
   ctx.replyWithMarkdown('El Título es:`' + ctx.message.text + '`', Markup.inlineKeyboard([
-    Markup.callbackButton('➡️ Correcto', 'next')
-]).extra())
+    Markup.callbackButton('➡️ Correcto', 'next'),
+    Markup.callbackButton('✏️ Editar', 'back'),
+    Markup.callbackButton('❌ Cancelar', 'cancel')
+  ]).extra())
   return ctx.wizard.next()
 });
 
@@ -94,10 +96,15 @@ const calendarHandler = new Composer()
 calendarHandler.action(/calendar-telegram-date-[\d-]+/g, ctx => {
     let date = ctx.match[0].replace("calendar-telegram-date-", "");
     ctx.scene.session.infoEvent[0] = date;
-    ctx.replyWithMarkdown('La Fecha es:`' + date + '`', Markup.inlineKeyboard([
-      Markup.callbackButton('➡️ Correcto', 'next')
-  ]).extra())
-    return ctx.wizard.next()
+    return ctx.editMessageText(`Día para el nuevo evento: <b>${ctx.scene.session.infoEvent[0]}</b>`, ctx.scene.session.calendar.getCalendar())
+});
+calendarHandler.action('ok', ctx => {
+  ctx.replyWithMarkdown('La Fecha es:`' + ctx.scene.session.infoEvent[0] + '`', Markup.inlineKeyboard([
+    Markup.callbackButton('➡️ Correcto', 'next'),
+    Markup.callbackButton('✏️ Editar', 'back'),
+    Markup.callbackButton('❌ Cancelar', 'cancel')
+]).extra())
+  return ctx.wizard.next()
 });
 
 const hourPickerUI = Extra
@@ -126,7 +133,8 @@ const hourPickerUI = Extra
 ], { columns: 3 }))
 
 const hourPicker = new Router(({ callbackQuery }) => {
-  if (!callbackQuery.data) {
+  if (!callbackQuery || !callbackQuery.data) {
+    
     return
   }
   const parts = callbackQuery.data.split(':')
@@ -137,37 +145,44 @@ const hourPicker = new Router(({ callbackQuery }) => {
     }
   }
 })
-calculator.on('hour', (ctx) => {
+hourPicker.on('hour', (ctx) => {
   ctx.scene.session.hour = ctx.state.value
   return editTime(ctx)
 })
-calculator.on('min', (ctx) => {
+hourPicker.on('min', (ctx) => {
   ctx.scene.session.min = ctx.state.value
   return editTime(ctx)
 })
-calculator.on('mode', (ctx) => {
+hourPicker.on('mode', (ctx) => {
   ctx.scene.session.mode = ctx.state.value
   return editTime(ctx)
 })
-calculator.on('clear', (ctx) => {
+hourPicker.on('clear', (ctx) => {
   ctx.scene.session.hour = "08"
   ctx.scene.session.min = "00"
   ctx.scene.session.mode = "AM"
   return editTime(ctx)
 })
-calculator.on('ok', (ctx) => {
-  if (ctx.scene.session.mode.match("PM")) {
-    const hour = (parseInt(ctx.scene.session.hour, 10) || 0)
-    hour += 12
-    ctx.scene.session.hour = hour
-  }
-  ctx.scene.session.infoEvent[0] = ctx.scene.session.infoEvent[0]+ctx.scene.session.hour + ctx.scene.session.min + "00" + "Z"
-  editTime(ctx)
+hourPicker.on('ok', (ctx) => {  
+  ctx.replyWithMarkdown('La hora elegida es: `' + ctx.scene.session.hour + ':' + ctx.scene.session.min + ' ' + ctx.scene.session.mode + '`', Markup.inlineKeyboard([
+    Markup.callbackButton('➡️ Correcto', 'next'),
+    Markup.callbackButton('✏️ Editar', 'back'),
+    Markup.callbackButton('❌ Cancelar', 'cancel')
+]).extra())
   return ctx.wizard.next()
 })
 
 function editTime (ctx) {
-  return ctx.editMessageText(`Tiempo: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI).catch(() => undefined)
+  return ctx.editMessageText(`Hora del evento: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI).catch(() => undefined)
+}
+
+function iCalendarDateTimeFormat(date, hour, min, mode) {
+  if (mode.match("PM")) {
+    let  hour2 = (parseInt(hour, 10) || 0)
+    hour2 += 12
+    hour = hour2
+  }
+  return date.replace("-", "") + "T" + hour + min + "00" + "Z"
 }
 
 const timeHandler = new Composer()
@@ -175,6 +190,10 @@ timeHandler.on('callback_query', hourPicker);
 
 const addEventWizard = new WizardScene('addevent-wizard',
 (ctx) => {
+  if (ctx.callbackQuery && ctx.callbackQuery.data) {
+    if (ctx.callbackQuery.message)
+      ctx.deleteMessage(ctx.callbackQuery.message.message_id)
+  }
   //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
   ctx.scene.session.infoEvent = ['dtstart','organizer','summary']
   /*
@@ -188,14 +207,29 @@ const addEventWizard = new WizardScene('addevent-wizard',
     return ctx.scene.leave()
   });*/
   //Estas tres lineas se borran cuando funcione lo de arriba
-  ctx.reply("Todo Correcto. Indica el Título del Evento")
+  ctx.reply("Todo Correcto ✅. Indica el Título del Evento")
   ctx.scene.session.infoEvent[1] = 'john@d.oe'
   return ctx.wizard.next();
 },
 stepTituloAddEventHandler,
 (ctx) => {
-  
-  const calendar = new Calendar(bot, {
+  if (ctx.callbackQuery && ctx.callbackQuery.data) {
+    if (ctx.callbackQuery.data.match('cancel'))
+      return ctx.scene.leave()
+    else if (ctx.callbackQuery.data.match('back')) {
+      try {        
+        console.log(ctx)    
+        ctx.deleteMessage(ctx.callbackQuery.message.message_id)
+        console.log(ctx)
+      } catch (error) {
+        console.log(error)
+      }
+      
+      ctx.reply("Indica el Título del Evento")
+      return ctx.wizard.back()
+    }  
+  }
+    ctx.scene.session.calendar = new Calendar(bot, {
     startWeekDay: 1,
     weekDayNames: ["L", "M", "X", "J", "V", "S", "D"],
     monthNames: [
@@ -208,30 +242,59 @@ stepTituloAddEventHandler,
       const maxDate = new Date();
       maxDate.setMonth(today.getMonth() + 1);
       maxDate.setDate(today.getDate());
-      calendar.setMaxDate(maxDate);
-      calendar.setMinDate(minDate);
-      calendar.setDateListener((context, date) => context.reply(date));
-      ctx.reply("Elige un día para el nuevo evento", calendar.getCalendar())
+      ctx.scene.session.calendar.setMaxDate(maxDate);
+      ctx.scene.session.calendar.setMinDate(minDate);
+      ctx.scene.session.infoEvent[0] = today.toISOString().split('T')[0];
+      ctx.reply(`Día para el nuevo evento: <b>${ctx.scene.session.infoEvent[0]}</b>`, ctx.scene.session.calendar.getCalendar())
       return ctx.wizard.next()
     },
     calendarHandler
     ,
     (ctx) => {
+      if (ctx.callbackQuery && ctx.callbackQuery.data) {
+        if (ctx.callbackQuery.data.match('cancel'))
+          return ctx.scene.leave()
+        else if (ctx.callbackQuery.data.match('back')) {
+          try {            
+            ctx.deleteMessage(ctx.callbackQuery.message.message_id)
+          } catch (error) {
+            console.log(error)
+          }
+          return ctx.wizard.back()
+        }  
+      }
       ctx.scene.session.hour = "08"
       ctx.scene.session.min = "00"
       ctx.scene.session.mode = "AM"
-      ctx.reply('Elige la hora del Evento')
-      ctx.reply(`Tiempo: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI)
+      ctx.reply(`Hora del evento: <b>${ctx.scene.session.hour}</b>:<b>${ctx.scene.session.min}</b> <b>${ctx.scene.session.mode}</b>`, hourPickerUI)
+      return ctx.wizard.next()
     }
     ,
+    hourPicker
+    ,
     (ctx) => {
-      ctx.reply('Evento `' + ctx.scene.session.infoEvent[2] + '` creado el día `' + ctx.scene.session.infoEvent[0] + '`')
+      if (ctx.callbackQuery && ctx.callbackQuery.data) {
+        if (ctx.callbackQuery.data.match('cancel'))
+          return ctx.scene.leave()
+        else if (ctx.callbackQuery.data.match('back')) {
+          try {            
+            ctx.deleteMessage(ctx.callbackQuery.message.message_id)
+          } catch (error) {
+            console.log(error)
+          }
+          return ctx.wizard.back()
+        }  
+      }
+      ctx.replyWithMarkdown('Evento `' + ctx.scene.session.infoEvent[2] + '` creado el día `' + ctx.scene.session.infoEvent[0] + ' ' + ctx.scene.session.hour + ':' + ctx.scene.session.min + ' ' + ctx.scene.session.mode + '`')
+      //Guardamos la fecha en el formato de iCalendar
+      ctx.scene.session.infoEvent[0] = iCalendarDateTimeFormat(ctx.scene.session.infoEvent[0], ctx.scene.session.hour, ctx.scene.session.min, ctx.scene.session.mode)
       //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[2], Fecha = dtsart = infoEvent[0], Email = organiser = infoEvent[1]
-      methods.vEventPub(infoEvent[0], infoEvent[1], infoEvent[2])
+      //methods.vEventPub(ctx.scene.session.infoEvent[0], ctx.scene.session.infoEvent[1], ctx.scene.session.infoEvent[2])
       return ctx.scene.leave()
     }
 ) 
-
+addEventWizard.command('cancel', (ctx) => ctx.scene.leave())
+addEventWizard.command('back', (ctx) => ctx.wizard.back())
 const addEventStage = new Stage([addEventWizard], { default: 'addevent-wizard' })
 bot.use(session())
 bot.startPolling()

@@ -99,6 +99,8 @@ class CalendarHelper {
 				currentRow = CalendarHelper.buildFillerRow(m, "lastRow-");
 			}
 		}
+		//OK Button
+		page.push([m.callbackButton("✅", "ok")]);
 	}
 
 	getPage(m, inputDate) {
