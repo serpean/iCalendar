@@ -15,7 +15,10 @@ const saveVEvent = params => {
     TempVevent.dtstamp = params.dtstamp;
 
     TempVevent.save(err => {
-      if (err) reject("No se pudo guardar el evento");
+      if (err) {
+        console.log(err);
+        reject("No se pudo guardar el evento");
+      }
       resolve(uid);
     });
   });
@@ -47,4 +50,10 @@ const deleteVEvent = uid => {
       resolve(event);
     });
   });
+};
+
+module.exports = {
+  saveVEvent,
+  findVEvent,
+  deleteVEvent
 };
