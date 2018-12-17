@@ -20,7 +20,7 @@ amqp.then((ch) => {
  * @param {string} dest Recipient and attendant of the event
  * @param {string} method Kind of event to process
  */
-function sendMail(jcal, dest, method){
+function sendToCua(jcal, dest, method){
     let msg;
     switch(method){
         case 'event':
@@ -58,7 +58,7 @@ function jMailer(method, req, opt, dest){
                     jcal.setVeventParam(0, opt.keys[i], opt[opt.keys[i]]);
                 }
                 dest.forEach((elem) => {
-                    sendMail(jcal, elem, method);
+                    sendToCua(jcal, elem, method);
                 });
             }
 
