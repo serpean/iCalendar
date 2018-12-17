@@ -348,6 +348,7 @@ const addEventWizard = new WizardScene(
       ctx.scene.session.mode
     );
     //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[2], Fecha = dtsart = infoEvent[0], Email = organiser = infoEvent[1]
+    console.log("Hello");
     methods
       .vEventPub(
         ctx.scene.session.infoEvent[0],

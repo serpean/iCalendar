@@ -19,7 +19,7 @@ const saveVEvent = params => {
         console.log(err);
         reject("No se pudo guardar el evento");
       }
-      resolve(uid);
+      resolve(params.uid);
     });
   });
 };

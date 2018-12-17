@@ -3,26 +3,36 @@ const veventController = require("./db/controllers/vevent");
 
 //'publish', 'request', 'reply', 'add', 'cancel', 'refresh', 'counter', 'declinecounter'
 
-function vEventPub(dtstart, organizer, summary) {
+const vEventPub = (dtstart, organizer, summary) => {
   return new Promise((resolve, reject) => {
-    const cal = new msg.Calendar("tempcal", 1.0);
-    cal.setMethod("publish");
     const uid = Date.now();
     const dtstamp = new Date(uid);
-    cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
-    const ev = calendar.toJson().vcalendar.vevent;
+    // const cal = new msg.Calendar("tempcal", 1.0);
+    console.log(cal);
+    // cal.setMethod("publish");
+    // cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
+    // const ev = calendar.toJson().vcalendar.vevent;
     const lastEvent = ev[ev.length - 1];
     //  resolve(lastEvent) ;
+    console.log("[x] vEventPub --> params");
+    const params = {
+      uid: uid,
+      sumary: summary,
+      organizer: organizer,
+      dtstart: dtstart,
+      dtstamp: dtstamp
+    };
     veventController
-      .saveVEvent({ uid, summary, organizer, dtstart, dtstamp })
+      .saveVEvent(params)
       .then(res => {
         resolve(res);
       })
       .catch(err => {
-        reject(err);
+        console.log(err);
+        if (err) reject(err);
       });
   });
-}
+};
 
 function vTodoPub(dtstart, organizer, priority, summary) {
   const cal = new msg.Calendar("tempcal", 1.0);
