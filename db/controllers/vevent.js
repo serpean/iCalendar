@@ -1,5 +1,10 @@
 const Vevent = require("../models/vevent");
 
+/**
+ * Save Vevent on the database
+ *
+ * @param {{uid, summary, organizer, dtstart, dtstamp}} params
+ */
 const saveVEvent = params => {
   return new Promise((resolve, reject) => {
     let TempVevent = new Vevent();
@@ -16,6 +21,11 @@ const saveVEvent = params => {
   });
 };
 
+/**
+ * Find a Vevent by the uid
+ *
+ * @param {Number} uid
+ */
 const findVEvent = uid => {
   return new Promise((resolve, reject) => {
     Vevent.find({ uid: uid }).exec((err, event) => {
@@ -25,6 +35,11 @@ const findVEvent = uid => {
   });
 };
 
+/**
+ * Delete a Vevent by uid
+ *
+ * @param {Number} uid
+ */
 const deleteVEvent = uid => {
   return Promise((resolve, reject) => {
     Vevent.findOneAndDelete({ uid: uid }).exec((err, event) => {
