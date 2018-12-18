@@ -331,7 +331,7 @@ function iCalendarDateTimeFormat(date, hour, min, mode) {
     hour2 += 12;
     hour = hour2;
   }
-  return date.replace("-", "") + "T" + hour + min + "00" + "Z";
+  return date.replace("-", "-") + "T" + hour + ":" + min + ":00" + ".000" + "Z";
 }
 
 const timeHandler = new Composer();

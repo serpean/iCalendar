@@ -49,7 +49,6 @@ const findVeventsByMonth = date => {
   return new Promise((resolve, reject) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-
     let gDate = new Date(year, month + 1, 1, 1, 0);
     if (month == 11) {
       gDate = new Date(year + 1, 0, 1, 1, 0);
@@ -67,7 +66,7 @@ const findVeventsByMonth = date => {
   });
 };
 
-const find = () => {
+const findVeventss = () => {
   return new Promise((resolve, reject) => {
     Vevent.find({}).exec((err, res) => {
       if (err) reject(err);
