@@ -39,11 +39,11 @@ const register = (telegramId, email) => {
       });
 
     User.findOne({ telegramId: telegramId })
-      .select("_id confirm email confirmationToken tokenExpirationDate")
+      .select("_id confirmed email confirmationToken tokenExpirationDate")
       .exec((err, res) => {
         if (res) {
-          if (res.confirm) return resolve("Tu cuenta ya está confirmado");
-          else if (res.email == email) {
+          if (res.confirmed) return resolve("Tu cuenta ya está confirmado");
+          else if (res.email === email) {
             const now = new Date();
             if (res.tokenExpirationDate < now) {
               sendEmail(email, res.confirmationToken);
