@@ -7,14 +7,12 @@ const vEventPub = (dtstart, organizer, summary) => {
   return new Promise((resolve, reject) => {
     const uid = Date.now();
     const dtstamp = new Date(uid);
-    // const cal = new msg.Calendar("tempcal", 1.0);
-    //console.log(cal);
-    // cal.setMethod("publish");
-    // cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
-    // const ev = calendar.toJson().vcalendar.vevent;
+    const cal = new msg.Calendar("tempcal", 1.0);
+    console.log(cal);
+    cal.setMethod("publish");
+    cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
+    //const ev = calendar.toJson().vcalendar.vevent;
     //const lastEvent = ev[ev.length - 1];
-    //  resolve(lastEvent) ;
-    console.log("[x] vEventPub --> params");
     const params = {
       uid: uid,
       sumary: summary,
