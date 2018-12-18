@@ -27,7 +27,8 @@ const sendEmail = (user, token) => {
     from: "noreply <ssrjcalendar@gmail.com>", // sender address
     to: user, // list of receivers
     subject: "JCalendar email confirm", // Subject line
-    text: "Token: " + token, // plain text body
+    text: `Confirma tu e-mail\nEnvía "/confirm token" al bot para poder confirmar tu dirección de correo electrónico 
+    (siendo "token" el token que se te indica a continuación).\nToken: " + token`, // plain text body
     html: `<h1>Confirma tu e-mail</h1><br />
     <h3>Envía "/confirm token" al bot para poder confirmar tu dirección de correo electrónico 
     (siendo "token" el token que se te indica a continuación).</h3>
