@@ -53,7 +53,7 @@ bot.command("changemail", ctx => {
 let confirmationToken;
 bot.command("confirm", ctx => {
   confirmationToken = ctx.message.text.split(" ")[1];
-  confirmUser(msg.from.id, confirmationToken)
+  confirmUser(ctx.from.id, confirmationToken)
     .then(res => {
       ctx.reply(res);
     })
