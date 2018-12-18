@@ -8,7 +8,6 @@ const vEventPub = (dtstart, organizer, summary) => {
     const uid = Date.now();
     const dtstamp = new Date(uid);
     const cal = new msg.Calendar("tempcal", 1.0);
-    console.log(cal);
     cal.setMethod("publish");
     cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
     //const ev = calendar.toJson().vcalendar.vevent;
