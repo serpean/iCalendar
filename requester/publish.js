@@ -56,10 +56,10 @@ function jMailer(method, req, opt, dest){
     jcal.setMethod('add');
     switch(method){
         case 'event':
-            if(!jcal.addVevent(req)) return false;
+            if(jcal.addVevent(req) === false) return false;
             else {
-                for(let i = 0; i < opt.keys.length; i++){
-                    jcal.setVeventParam(0, opt.keys[i], opt[opt.keys[i]]);
+                for(let i = 0; i < Object.keys(opt).length; i++){
+                    jcal.setVeventParam(0, Object.keys(opt)[i], opt[Object.keys(opt)[i]]);
                 }
                 dest.forEach((elem) => {
                     sendToCua(jcal, elem, method);
