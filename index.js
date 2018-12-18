@@ -3,6 +3,7 @@ const token = config.BOT_TOKEN;
 const mongoose = require("mongoose");
 const Calendar = require("./calendarUI/calendarUI");
 const methods = require("./methods.js");
+const dbVevent = require("./db/controllers/vevent.js");
 const Telegraf = require("telegraf");
 const Composer = require("telegraf/composer");
 const session = require("telegraf/session");
@@ -82,16 +83,15 @@ bot.command("geteventday", ctx => {
 });
 
 function returnDate(infoEvent) {  
-  console.log(infoEvent)
   let anyo = infoEvent[0].substring(0,4)
-  let mes = infoEvent[0].substring(4, 6)
-  let dia = infoEvent[0].substring(6, 8)
+  let mes = infoEvent[0].substring(5, 7)
+  let dia = infoEvent[0].substring(8, 10)
   return dia + "-" + mes + "-" + anyo
 }
 
 function returnTime(infoEvent) {
-  let hora = infoEvent[0].substring(9, 11)
-  let min = infoEvent[0].substring(11, 13)
+  let hora = infoEvent[0].substring(11, 13)
+  let min = infoEvent[0].substring(14, 16)
   //let sec = infoEvent[0].substring(13, 15)
   return hora + ":" + min// + ":" + sec
 }
@@ -117,8 +117,8 @@ const getEventDayWizard = new WizardScene(
       });
   },
   ctx => {
-    //getEventsDat(day)
-    ctx.scene.session.eventsDay = [['20181222T184500Z', "john@do.e", "Sorteo de Navidad"], ['20181222T084500Z', "john@do.e", "Cena de Sorteo de Navidad"]]
+    //getEventsDay(day)
+    ctx.scene.session.eventsDay = [['2018-12-22T08:45:00.000Z', "john@do.e", "Sorteo de Navidad", "idEvento1"], ['2018-12-22T18:45:00.000Z', "john@do.e", "Cena de Sorteo de Navidad", "idEvento2"]]
     ctx.scene.session.horaOrden = []
     for (let i = 0; i < ctx.scene.session.eventsDay.length; i++) {
       ctx.scene.session.horaOrden[i] = {id:ctx.scene.session.eventsDay[i][0], order:i}
@@ -134,17 +134,15 @@ const getEventDayWizard = new WizardScene(
     ctx.scene.session.stringReturn += "`" + returnDate(ctx.scene.session.eventsDay[0]) + "`</br>\n"
     for (let i = 0; i < ctx.scene.session.horaOrden.length; i++) {
         let order = ctx.scene.session.horaOrden[i].order
-        let infoEvent = ctx.scene.session.eventsDay[order]
         ctx.replyWithMarkdown(
-          "`" + returnTime(infoEvent) + "`\n\t" + ctx.scene.session.eventsDay[order][2] + "\n",
+          "`" + returnTime(ctx.scene.session.eventsDay[order]) + "`\n\t" + ctx.scene.session.eventsDay[order][2] + "\n",
           Markup.inlineKeyboard([    
-          Markup.callbackButton("✉️ Compartir", "share"),
-          Markup.callbackButton("✏️ Editar", "edit"),
-          Markup.callbackButton("❌ Cancelar", "delete")
+          Markup.callbackButton("✉️ Compartir", "share-" + ctx.scene.session.eventsDay[order][3]),
+          Markup.callbackButton("✏️ Editar", "edit-" + ctx.scene.session.eventsDay[order][3]),
+          Markup.callbackButton("❌ Cancelar", "delete-" + ctx.scene.session.eventsDay[order][3])
           ]).extra());
-
     }
-    //ctx.replyWithMarkdown(ctx.scene.session.stringReturn)
+    ctx.replyWithMarkdown("", Markup.inlineKeyboard([Markup.callbackButton("🔙 Salir", "exit")]).extra());
   }
 );
 
@@ -181,15 +179,15 @@ const getEventWizard = new WizardScene(
       });
   },
   ctx => {
-    ctx.scene.session.infoEvent = ['20181222T084500Z', "john@do.e", "Sorteo de Navidad"]
+    ctx.scene.session.infoEvent = ['2018-12-22T08:45:00.000Z', "john@do.e", "Sorteo de Navidad"]
     //getEvent(id)
-    ctx.scene.session.anyo = ctx.scene.session.infoEvent[0].substring(0,4)
-    ctx.scene.session.mes = ctx.scene.session.infoEvent[0].substring(4, 6)
-    ctx.scene.session.dia = ctx.scene.session.infoEvent[0].substring(6, 8)
+    ctx.scene.session.anyo = ctx.scene.session.infoEvent[0].substring(0, 4)
+    ctx.scene.session.mes  = ctx.scene.session.infoEvent[0].substring(4, 6)
+    ctx.scene.session.dia  = ctx.scene.session.infoEvent[0].substring(6, 8)
     ctx.scene.session.hora = ctx.scene.session.infoEvent[0].substring(9, 11)
-    ctx.scene.session.min = ctx.scene.session.infoEvent[0].substring(11, 13)
-    ctx.scene.session.sec = ctx.scene.session.infoEvent[0].substring(13, 15)
-    ctx.reply(ctx.scene.session.anyo + "-" + ctx.scene.session.mes + "-" + ctx.scene.session.dia + " " + ctx.scene.session.hora + ":" + ctx.scene.session.min + ":" + ctx.scene.session.sec + "\n" + ctx.scene.session.infoEvent[2])
+    ctx.scene.session.min  = ctx.scene.session.infoEvent[0].substring(11, 13)
+    ctx.scene.session.sec  = ctx.scene.session.infoEvent[0].substring(13, 15)
+    ctx.reply(returnDate(ctx.scene.session.infoEvent) + " " + returnTime(ctx.scene.session.infoEvent) + "\n" + ctx.scene.session.infoEvent[2])
   }
 );
 // Add Event
@@ -331,7 +329,7 @@ function iCalendarDateTimeFormat(date, hour, min, mode) {
     hour2 += 12;
     hour = hour2;
   }
-  return date.replace("-", "-") + "T" + hour + ":" + min + ":00" + ".000" + "Z";
+  return date + "T" + hour + ":" + min + ":00.000Z";
 }
 
 const timeHandler = new Composer();
@@ -425,7 +423,7 @@ const addEventWizard = new WizardScene(
       }
     }
     ctx.scene.session.hour = "08";
-    ctx.scene.session.min = "00";
+    ctx.scene.session.min  = "00";
     ctx.scene.session.mode = "AM";
     ctx.reply(
       `Hora del evento: <b>${ctx.scene.session.hour}</b>:<b>${
@@ -476,7 +474,8 @@ const addEventWizard = new WizardScene(
         ctx.scene.session.infoEvent[2]
       )
       .then(res => {
-        ctx.replyWithMarkdown("La id del evento creado es `" + res + "`");
+        ctx.replyWithMarkdown("La id del evento creado es:");
+        ctx.replyWithMarkdown("`" + res + "`");
         return ctx.scene.leave();
       })
       .catch(err => {
