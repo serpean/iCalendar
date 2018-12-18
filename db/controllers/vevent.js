@@ -46,7 +46,16 @@ const findVEvent = uid => {
  * @param {Date} date
  */
 const findVeventByDay = date => {
-  // TODO:
+  return new Promise((resolve, reject) => {
+    Vevent.find({
+      dtstart: new Date(date)
+    })
+      .select("uid organizer dtstart")
+      .exec((err, events) => {
+        if (err) reject(err);
+        resolve(events);
+      });
+  });
 };
 
 /**
@@ -67,10 +76,12 @@ const findVeventsByMonth = date => {
         $lte: new Date(gDate),
         $gte: new Date(lDate)
       }
-    }).exec((err, events) => {
-      if (err) reject(err);
-      resolve(events);
-    });
+    })
+      .select("uid organizer dtstart")
+      .exec((err, events) => {
+        if (err) reject(err);
+        resolve(events);
+      });
   });
 };
 
@@ -105,5 +116,6 @@ module.exports = {
   findVEvent,
   deleteVEvent,
   findVeventsByMonth,
-  findVevents
+  findVevents,
+  findVeventByDay
 };
