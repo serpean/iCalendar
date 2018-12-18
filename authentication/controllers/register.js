@@ -80,7 +80,7 @@ const register = (telegramId, email) => {
           if (err) return reject("El email: " + email + " ya está en uso");
           sendEmail(email, TempUser.confirmationToken);
           return resolve(
-            "Usario " + telegramId + " con email: " + email + " fue creado"
+            "Usario " + telegramId + " con email: " + email + " fue creado\nComprueba tu bandeja de entrada para confirmar tu correo"
           );
         });
       });
