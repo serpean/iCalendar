@@ -12,7 +12,9 @@ const saveVEvent = params => {
     TempVevent.summary = params.summary;
     TempVevent.organizer = params.organizer;
     TempVevent.dtstart = params.dtstart;
+    console.log(TempVevent.dtstart);
     TempVevent.dtstamp = params.dtstamp;
+    console.log(TempVevent);
 
     TempVevent.save(err => {
       if (err) {
@@ -33,7 +35,43 @@ const findVEvent = uid => {
   return new Promise((resolve, reject) => {
     Vevent.find({ uid: uid }).exec((err, event) => {
       if (err) reject(err);
+      // TODO: quitar _id
       resolve(event);
+    });
+  });
+};
+
+/**
+ * Get Vevents give a month
+ * @param {Date} date
+ */
+const findVeventsByMonth = date => {
+  return new Promise((resolve, reject) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    let gDate = new Date(year, month + 1, 1, 1, 0);
+    if (month == 11) {
+      gDate = new Date(year + 1, 0, 1, 1, 0);
+    }
+    const lDate = new Date(year, month, 1, 1, 0);
+    Vevent.find({
+      dtstart: {
+        $lte: new Date(gDate),
+        $gte: new Date(lDate)
+      }
+    }).exec((err, events) => {
+      if (err) reject(err);
+      resolve(events);
+    });
+  });
+};
+
+const find = () => {
+  return new Promise((resolve, reject) => {
+    Vevent.find({}).exec((err, res) => {
+      if (err) reject(err);
+      resolve(res);
     });
   });
 };
@@ -55,5 +93,7 @@ const deleteVEvent = uid => {
 module.exports = {
   saveVEvent,
   findVEvent,
-  deleteVEvent
+  deleteVEvent,
+  findVeventsByMonth,
+  find
 };
