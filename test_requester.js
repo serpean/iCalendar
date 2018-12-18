@@ -22,13 +22,12 @@ console.log(JSON.stringify(jcal.toJson()) + '\n');
 console.log('===============================================================================\n');
 console.log('Sending to AMQP queue');
 requester.sendData(JSON.stringify(jcal.toJson()));
-console.log('Calendar sent!');
+console.log('Calendar sent!\n');
 console.log('===============================================================================\n');
 channel.consume(topic, (msg) => {
     console.log('Message received:');
     console.log(msg.content.toString() + '\n');
-    console.log('END OF PRINT');
-    process.exit(0);
+    setTimeout(() => { console.log('END OF PRINT'); process.exit(0); }, 1000);
 }, {noAck: true});
 }).catch(console.warn);
 

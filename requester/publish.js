@@ -15,12 +15,9 @@ var amqp = require('amqplib');
  * @param {string} method Kind of event to process
  */
 function sendToCua(jcal, dest, method){
-    console.log('3');
     amqp.connect(config.CUADM).then((ch) => {
-        console.log('2');
         return ch.createChannel();
     }).then((ch) => {
-        console.log('1');
         ch.assertQueue(topic);
         let msg;
         switch(method){
@@ -39,7 +36,7 @@ function sendToCua(jcal, dest, method){
                 jcal.setVeventParam(0, 'attendee', '');
                 break;
         }
-        ch.close();
+        //ch.close();
     }).catch(console.error);
 }
 
@@ -51,7 +48,6 @@ function sendToCua(jcal, dest, method){
  * @param {Array} dest Attendants of the event processed
  */
 function jMailer(method, req, opt, dest){
-    console.log('paso')
     let jcal = new Jcal.Calendar(config.prodid, config.version);
     jcal.setMethod('add');
     switch(method){
@@ -75,26 +71,19 @@ function jMailer(method, req, opt, dest){
  * @param {Array} events Array with the events prepared to send
  */
 function sendPublish(jcal, events) {
-    console.log('paso1');
     const evtP = jcal.listVeventParam();
-    console.log(JSON.stringify(events));
     let required = [];
     let optional = {};
-    console.log(events.vevent.length);
     for(let i = 0; i < events.vevent.length; i++){
-        console.log('loop');
         for(let j = 0; j < evtP.required.length; j++){
             required.push(events.vevent[i].event[evtP.required[j]]);
         }
-        console.log('loop');
         for(let j = 0; j < evtP.optional.length; j++){
             if(events[evtP.optional[j]])
                 optional[evtP.optional[j]] = events.vevent[i].event[evtP.optional[j]];
         }
-        console.log('loop');
         jMailer('event', required, optional, events.vevent[i].asistentes);
     }
-    console.log('paso');
 }
 
 /**
@@ -103,15 +92,10 @@ function sendPublish(jcal, events) {
  * @return {Array} Array containing some VEVENT events
  */
 function publishEvent(jcal) {
-    console.log('paso');
     var result = [];
-    console.log(jcal.getVeventParam(2, 'uid'));
     for(let i = 0; jcal.getVeventParam(i, 'uid'); i++){
-        console.log('loop');
         let asistentes = jcal.getVeventParam(i, 'attendee');
-        console.log(jcal.getVeventParam(i, 'attendee'));
         if(asistentes) {
-            console.log('haylos');
             asistentes = asistentes.split(',');
             jcal.setVeventParam(i, 'attendee', '');
             result.push({
@@ -120,7 +104,6 @@ function publishEvent(jcal) {
             });
         }
     }
-    console.log(result);
     return result;
 }
 
@@ -130,7 +113,6 @@ function publishEvent(jcal) {
  * @return {Array} Array containing some VFREEBUSY events
  */
 function publishFree(jcal) {
-    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVfreeParam(i, 'uid'); i++){
         let asistentes = jcal.getVfreeParam(i, 'attendee');
@@ -152,7 +134,6 @@ function publishFree(jcal) {
  * @return {Array} Array containing some VTODO events
  */
 function publishTodo(jcal){
-    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVtodoParam(i, 'uid'); i++){
         let asistentes = jcal.getVtodoParam(i, 'attendee');
@@ -174,7 +155,6 @@ function publishTodo(jcal){
  * @return {Array} Array containing some VJOURNAL events
  */
 function publishJournal(jcal) {
-    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVjournalParam(i, 'uid'); i++){
         let asistentes = jcal.getVjournalParam(i, 'attendee');
@@ -195,7 +175,6 @@ function publishJournal(jcal) {
  * @param {JSON} calendar JSON representing the JCalendar object
  */
 function adder(calendar) {
-    console.log('paso');
     let jcal = new Jcal.Calendar(null, 0);
     jcal.parseJSON(calendar);
     let cua = {};
@@ -203,7 +182,6 @@ function adder(calendar) {
     if(jcal.getVfreeParam(0, 'uid')) cua.vfreebusy = publishFree(jcal);
     if(jcal.getVtodoParam(0, 'uid')) cua.vtodo = publishTodo(jcal);
     if(jcal.getVjournalParam(0, 'uid')) cua.vjournal = publishJournal(jcal);
-    console.log('paso');
     sendPublish(jcal, cua);
 }
 
