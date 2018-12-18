@@ -42,6 +42,14 @@ const findVEvent = uid => {
 };
 
 /**
+ * Get Vevents give a day
+ * @param {Date} date
+ */
+const findVeventByDay = date => {
+  // TODO:
+};
+
+/**
  * Get Vevents give a month
  * @param {Date} date
  */
@@ -66,7 +74,10 @@ const findVeventsByMonth = date => {
   });
 };
 
-const findVeventss = () => {
+/**
+ * Get all eventss
+ */
+const findVevents = () => {
   return new Promise((resolve, reject) => {
     Vevent.find({}).exec((err, res) => {
       if (err) reject(err);
@@ -94,5 +105,5 @@ module.exports = {
   findVEvent,
   deleteVEvent,
   findVeventsByMonth,
-  find
+  findVevents
 };

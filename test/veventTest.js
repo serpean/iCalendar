@@ -5,7 +5,7 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 // vevent
-//   .find()
+//   .findVevents()
 //   .then(res => console.log(res))
 //   .catch(err => console.log(err));
 
