@@ -3,6 +3,12 @@ const veventController = require("./db/controllers/vevent");
 
 //'publish', 'request', 'reply', 'add', 'cancel', 'refresh', 'counter', 'declinecounter'
 
+/**
+  * Publishes an event into a calendar
+  * @param dtstart Value of the date the event will start 
+  * @param organizer Name of the organizer of the event/calendar
+  * @param summary Value of the summary which describes the event
+  */
 const vEventPub = (dtstart, organizer, summary) => {
   return new Promise((resolve, reject) => {
     const uid = Date.now();
@@ -31,6 +37,7 @@ const vEventPub = (dtstart, organizer, summary) => {
   });
 };
 
+//TODO
 function vTodoPub(dtstart, organizer, priority, summary) {
   return new Promise((resolve, reject) => {  
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -48,18 +55,11 @@ function vTodoPub(dtstart, organizer, priority, summary) {
       dtstart: dtstart,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vFreebusyPub(dtstart, dtend, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -76,18 +76,11 @@ function vFreebusyPub(dtstart, dtend, organizer) {
       dtstart: dtstart,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vJournalPub(description, dtstart, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -105,18 +98,11 @@ function vJournalPub(description, dtstart, organizer) {
       dtstamp: dtstamp,
       description: description
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventReq(attendee, dtstart, organizer, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -134,18 +120,11 @@ function vEventReq(attendee, dtstart, organizer, summary) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoReq(attendee, dtstart, organizer, priority, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -164,18 +143,11 @@ function vTodoReq(attendee, dtstart, organizer, priority, summary) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vFreebusyReq(attendee, dtend, dtstart, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -193,18 +165,11 @@ function vFreebusyReq(attendee, dtend, dtstart, organizer) {
       dtend: dtend,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventRep(attendee, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -220,18 +185,11 @@ function vEventRep(attendee, organizer) {
       dtstamp: dtstamp,
       dtstamp: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoRep(attendee, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -247,18 +205,11 @@ function vTodoRep(attendee, organizer) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vFreebusyRep(attendee, dtend, dtstart, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -276,18 +227,11 @@ function vFreebusyRep(attendee, dtend, dtstart, organizer) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventAdd(dtstart, organizer, sequence, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -305,18 +249,11 @@ function vEventAdd(dtstart, organizer, sequence, summary) {
       dtstart: dtstart,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoAdd(organizer, priority, sequence, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -334,18 +271,11 @@ function vTodoAdd(organizer, priority, sequence, summary) {
       organizer: organizer,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vJournalAdd(description, dtstart, organizer, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -363,18 +293,11 @@ function vJournalAdd(description, dtstart, organizer, sequence) {
       dtstamp: dtstamp,
       description: description
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventCancel(organizer, sequence, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -390,18 +313,11 @@ function vEventCancel(organizer, sequence, sequence) {
       organizer: organizer,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoCancel(organizer, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -417,18 +333,11 @@ function vTodoCancel(organizer, sequence) {
       dtstamp: dtstamp,
       uid: uid
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vJournalCancel(organizer, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -444,18 +353,11 @@ function vJournalCancel(organizer, sequence) {
       organizer: organizer,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventRefresh(attendee, organizer) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -471,18 +373,11 @@ function vEventRefresh(attendee, organizer) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoRefresh(attendee) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -497,18 +392,11 @@ function vTodoRefresh(attendee) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventCounter(dtstart, organizer, sequence, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -526,18 +414,11 @@ function vEventCounter(dtstart, organizer, sequence, summary) {
       dtstart: dtstart,
       dtstamp: dtstamp
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoCounter(attendee, organizer, priority, summary) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -555,18 +436,11 @@ function vTodoCounter(attendee, organizer, priority, summary) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vEventDC(attendee, organizer, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -583,18 +457,11 @@ function vEventDC(attendee, organizer, sequence) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
+//TODO
 function vTodoDC(attendee, organizer, sequence) {
   return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
@@ -611,15 +478,7 @@ function vTodoDC(attendee, organizer, sequence) {
       dtstamp: dtstamp,
       attendee: attendee
     };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    //TODO Controller
   });
 }
 
