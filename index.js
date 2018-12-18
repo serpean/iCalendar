@@ -86,7 +86,7 @@ const stepTituloAddEventHandler = new Composer();
 stepTituloAddEventHandler.use(ctx => {
   ctx.scene.session.infoEvent[2] = ctx.message.text;
   ctx.replyWithMarkdown(
-    "El Título es:`" + ctx.message.text + "`",
+    "El Título es: `" + ctx.message.text + "`",
     Markup.inlineKeyboard([
       Markup.callbackButton("➡️ Correcto", "next"),
       Markup.callbackButton("✏️ Editar", "back"),
@@ -107,7 +107,7 @@ calendarHandler.action(/calendar-telegram-date-[\d-]+/g, ctx => {
 });
 calendarHandler.action("ok", ctx => {
   ctx.replyWithMarkdown(
-    "La Fecha es:`" + ctx.scene.session.infoEvent[0] + "`",
+    "La Fecha es: `" + ctx.scene.session.infoEvent[0] + "`",
     Markup.inlineKeyboard([
       Markup.callbackButton("➡️ Correcto", "next"),
       Markup.callbackButton("✏️ Editar", "back"),
@@ -348,7 +348,6 @@ const addEventWizard = new WizardScene(
       ctx.scene.session.mode
     );
     //Llamo al método de Dani pasando como parámetro Titulo = summary = infoEvent[2], Fecha = dtsart = infoEvent[0], Email = organiser = infoEvent[1]
-    console.log("Hello");
     methods
       .vEventPub(
         ctx.scene.session.infoEvent[0],
@@ -356,7 +355,7 @@ const addEventWizard = new WizardScene(
         ctx.scene.session.infoEvent[2]
       )
       .then(res => {
-        ctx.reply("Todo ha salido bien " + res);
+        ctx.replyWithMarkdown("La id del evento creado es `" + res + "`");
         return ctx.scene.leave();
       })
       .catch(err => {
