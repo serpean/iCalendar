@@ -132,55 +132,57 @@ const confirmUser = (telegramId, token) => {
  */
 const changeEmail = (telegramId, email) => {
   return new Promise((resolve, reject) => {
-    User.findOne({ telegramId: telegramId }).exec((err, user) => {
-      if (err) return reject("No te has registrado todavía");
-      if (email === user.email) {
-      } else {
-        const expirationdate = new Date();
-        expirationdate.setDate(expirationdate.getDate() + 1);
-        const confirmationToken =
-          Math.random()
-            .toString(36)
-            .substring(2, 15) +
-          Math.random()
-            .toString(36)
-            .substring(2, 15);
-        if (user.confirmed) {
-          User.updateOne(
-            { _id: user.id },
-            {
-              $set: {
-                confirmed: false,
-                email: email,
-                confirmationToken: confirmationToken,
-                expirationDate: expirationdate
-              }
-            },
-            err => {
-              if (err) return reject("Error al actualizar");
-              sendEmail(email, confirmationToken);
-              return resolve(`Se acaba de cambiar tu email a ${email}`);
-            }
-          );
+    if (email) {
+      User.findOne({ telegramId: telegramId }).exec((err, user) => {
+        if (err) return reject("No te has registrado todavía");
+        if (email === user.email) {
         } else {
-          User.updateOne(
-            { _id: user.id },
-            {
-              $set: {
-                email: email,
-                confirmationToken: confirmationToken,
-                expirationDate: expirationdate
+          const expirationdate = new Date();
+          expirationdate.setDate(expirationdate.getDate() + 1);
+          const confirmationToken =
+            Math.random()
+              .toString(36)
+              .substring(2, 15) +
+            Math.random()
+              .toString(36)
+              .substring(2, 15);
+          if (user.confirmed) {
+            User.updateOne(
+              { _id: user.id },
+              {
+                $set: {
+                  confirmed: false,
+                  email: email,
+                  confirmationToken: confirmationToken,
+                  expirationDate: expirationdate
+                }
+              },
+              err => {
+                if (err) return reject("Error al actualizar");
+                sendEmail(email, confirmationToken);
+                return resolve(`Se acaba de cambiar tu email a ${email}`);
               }
-            },
-            err => {
-              if (err) return reject("Error al actualizar");
-              sendEmail(email, confirmationToken);
-              return resolve(`Se acaba de cambiar tu email a ${email}`);
-            }
-          );
+            );
+          } else {
+            User.updateOne(
+              { _id: user.id },
+              {
+                $set: {
+                  email: email,
+                  confirmationToken: confirmationToken,
+                  expirationDate: expirationdate
+                }
+              },
+              err => {
+                if (err) return reject("Error al actualizar");
+                sendEmail(email, confirmationToken);
+                return resolve(`Se acaba de cambiar tu email a ${email}`);
+              }
+            );
+          }
         }
-      }
-    });
+      });
+    }
   });
 };
 
