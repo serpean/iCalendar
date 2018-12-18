@@ -7,7 +7,7 @@ const VeventSchema = new Schema({
   atendee: String,
   summary: String,
   dtstamp: String,
-  dtstart: String,
+  dtstart: Date,
   sequence: String,
   optional: String
 });

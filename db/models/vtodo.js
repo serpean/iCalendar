@@ -7,7 +7,7 @@ const VtodoSchema = new Schema({
   atendee: String,
   summary: String,
   dtstamp: String,
-  dtstart: String,
+  dtstart: Date,
   priority: String,
   sequence: String,
   optional: String

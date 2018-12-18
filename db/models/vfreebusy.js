@@ -6,7 +6,7 @@ const VfreebusySchema = new Schema({
   organizer: String,
   atendee: String,
   dtstamp: String,
-  dtstart: String,
+  dtstart: Date,
   dtend: String,
   optional: String
 });

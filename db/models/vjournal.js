@@ -6,7 +6,7 @@ const VjournalSchema = new Schema({
   organizer: String,
   description: String,
   dtstamp: String,
-  dtstart: String,
+  dtstart: Date,
   sequence: String,
   optional: String
 });
