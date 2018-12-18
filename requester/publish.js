@@ -2,17 +2,11 @@ const Jcal = require('../msg');
 const config = require("../config.json");
 
 //Some parameters for the AMQP connection
-const topic = 'publish';
+const topic = 'add';
 var channel;
 
 //Connection to the AMQP queue
-var amqp = require('amqplib').connect(config.CUADM);
-amqp.then((ch) => {
-    return ch.createChannel();
-}).then((ch) => {
-    ch.assertQueue(topic);
-    channel = ch;
-}).catch(console.warn);
+var amqp = require('amqplib');
 
 /**
  * Send PUBLISH jCalendar objects to a AMQP compatible queue
@@ -21,23 +15,32 @@ amqp.then((ch) => {
  * @param {string} method Kind of event to process
  */
 function sendToCua(jcal, dest, method){
-    let msg;
-    switch(method){
-        case 'event':
-            jcal.setVeventParam(0, 'attendees', dest);
-            msg = JSON.stringify(jcal.toJson());
-            break;
-    }
-    const message = {
-        recipient: dest,
-        event: msg
-    };
-    channel.sendToQueue(topic, Buffer.from(JSON.stringify(message)));
-    switch(method){
-        case 'event':
-            jcal.setVeventParam(0, 'attendees', '');
-            break;
-    }
+    console.log('3');
+    amqp.connect(config.CUADM).then((ch) => {
+        console.log('2');
+        return ch.createChannel();
+    }).then((ch) => {
+        console.log('1');
+        ch.assertQueue(topic);
+        let msg;
+        switch(method){
+            case 'event':
+                jcal.setVeventParam(0, 'attendee', dest);
+                msg = JSON.stringify(jcal.toJson());
+                break;
+        }
+        const message = {
+            recipient: dest,
+            event: msg
+        };
+        ch.sendToQueue(topic, Buffer.from(JSON.stringify(message)));
+        switch(method){
+            case 'event':
+                jcal.setVeventParam(0, 'attendee', '');
+                break;
+        }
+        ch.close();
+    }).catch(console.error);
 }
 
 /**
@@ -48,13 +51,14 @@ function sendToCua(jcal, dest, method){
  * @param {Array} dest Attendants of the event processed
  */
 function jMailer(method, req, opt, dest){
+    console.log('paso')
     let jcal = new Jcal.Calendar(config.prodid, config.version);
-    jcal.setMethod('publish');
+    jcal.setMethod('add');
     switch(method){
         case 'event':
             if(!jcal.addVevent(req)) return false;
             else {
-                for(let i = 0; i < opt.keys.lenght; i++){
+                for(let i = 0; i < opt.keys.length; i++){
                     jcal.setVeventParam(0, opt.keys[i], opt[opt.keys[i]]);
                 }
                 dest.forEach((elem) => {
@@ -71,19 +75,26 @@ function jMailer(method, req, opt, dest){
  * @param {Array} events Array with the events prepared to send
  */
 function sendPublish(jcal, events) {
+    console.log('paso1');
     const evtP = jcal.listVeventParam();
+    console.log(JSON.stringify(events));
     let required = [];
     let optional = {};
-    for(let i = 0; i < events.vevent.lenght; i++){
-        for(let j = 0; j < evtP.required.lenght; j++){
+    console.log(events.vevent.length);
+    for(let i = 0; i < events.vevent.length; i++){
+        console.log('loop');
+        for(let j = 0; j < evtP.required.length; j++){
             required.push(events.vevent[i].event[evtP.required[j]]);
         }
-        for(let j = 0; j < evtP.optional.lenght; j++){
+        console.log('loop');
+        for(let j = 0; j < evtP.optional.length; j++){
             if(events[evtP.optional[j]])
                 optional[evtP.optional[j]] = events.vevent[i].event[evtP.optional[j]];
         }
+        console.log('loop');
         jMailer('event', required, optional, events.vevent[i].asistentes);
     }
+    console.log('paso');
 }
 
 /**
@@ -92,18 +103,24 @@ function sendPublish(jcal, events) {
  * @return {Array} Array containing some VEVENT events
  */
 function publishEvent(jcal) {
-    let result = [];
+    console.log('paso');
+    var result = [];
+    console.log(jcal.getVeventParam(2, 'uid'));
     for(let i = 0; jcal.getVeventParam(i, 'uid'); i++){
-        let asistentes = jcal.getVeventParam(i, 'attendees');
+        console.log('loop');
+        let asistentes = jcal.getVeventParam(i, 'attendee');
+        console.log(jcal.getVeventParam(i, 'attendee'));
         if(asistentes) {
+            console.log('haylos');
             asistentes = asistentes.split(',');
-            jcal.setVeventParam(i, 'attendees', '');
+            jcal.setVeventParam(i, 'attendee', '');
             result.push({
                 asistentes: asistentes,
                 event: jcal.toJson().vcalendar.vevent[i]
             });
         }
     }
+    console.log(result);
     return result;
 }
 
@@ -113,12 +130,13 @@ function publishEvent(jcal) {
  * @return {Array} Array containing some VFREEBUSY events
  */
 function publishFree(jcal) {
+    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVfreeParam(i, 'uid'); i++){
-        let asistentes = jcal.getVfreeParam(i, 'attendees');
+        let asistentes = jcal.getVfreeParam(i, 'attendee');
         if(asistentes) {
             asistentes = asistentes.split(',');
-            jcal.setVfreeParam(i, 'attendees', '');
+            jcal.setVfreeParam(i, 'attendee', '');
             result.push({
                 asistentes: asistentes,
                 event: jcal.toJson().vcalendar.vfreebusy[i]
@@ -134,12 +152,13 @@ function publishFree(jcal) {
  * @return {Array} Array containing some VTODO events
  */
 function publishTodo(jcal){
+    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVtodoParam(i, 'uid'); i++){
-        let asistentes = jcal.getVtodoParam(i, 'attendees');
+        let asistentes = jcal.getVtodoParam(i, 'attendee');
         if(asistentes) {
             asistentes = asistentes.split(',');
-            jcal.setVtodoParam(i, 'attendees', '');
+            jcal.setVtodoParam(i, 'attendee', '');
             result.push({
                 asistentes: asistentes,
                 event: jcal.toJson().vcalendar.vtodo[i]
@@ -155,12 +174,13 @@ function publishTodo(jcal){
  * @return {Array} Array containing some VJOURNAL events
  */
 function publishJournal(jcal) {
+    console.log('paso');
     let result = [];
     for(let i = 0; jcal.getVjournalParam(i, 'uid'); i++){
-        let asistentes = jcal.getVjournalParam(i, 'attendees');
+        let asistentes = jcal.getVjournalParam(i, 'attendee');
         if(asistentes) {
             asistentes = asistentes.split(',');
-            jcal.setVjournalParam(i, 'attendees', '');
+            jcal.setVjournalParam(i, 'attendee', '');
             result.push({
                 asistentes: asistentes,
                 event: jcal.toJson().vcalendar.vtodo[i]
@@ -174,7 +194,8 @@ function publishJournal(jcal) {
  * Launcher for sending procedure
  * @param {JSON} calendar JSON representing the JCalendar object
  */
-function publish(calendar) {
+function adder(calendar) {
+    console.log('paso');
     let jcal = new Jcal.Calendar(null, 0);
     jcal.parseJSON(calendar);
     let cua = {};
@@ -182,7 +203,8 @@ function publish(calendar) {
     if(jcal.getVfreeParam(0, 'uid')) cua.vfreebusy = publishFree(jcal);
     if(jcal.getVtodoParam(0, 'uid')) cua.vtodo = publishTodo(jcal);
     if(jcal.getVjournalParam(0, 'uid')) cua.vjournal = publishJournal(jcal);
+    console.log('paso');
     sendPublish(jcal, cua);
 }
 
-module.exports.publish = publish;
+module.exports.adder = adder;

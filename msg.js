@@ -187,8 +187,8 @@ module.exports.Calendar = class Calendar {
      * @return {boolean} True if all went fine or false if there is no VEVENT or wrong parameter name
      */
     setVeventParam(id, name, value){
-        if(this.events[method].vevent.optional.indexOf(name) == -1) 
-            if(this.events[method].vevent.required.indexOf(name) == -1)
+        if(this.events[this.cal.method].vevent.optional.indexOf(name) == -1) 
+            if(this.events[this.cal.method].vevent.required.indexOf(name) == -1)
                 return false;
         if(this.cal.vevent == undefined || this.cal.vevent.length <= id) return false;
         this.cal.vevent[id][name] = value;
@@ -414,10 +414,10 @@ module.exports.Calendar = class Calendar {
      * @param {string} jotason Stringfied JSON with an JCALENDAR valid format
      * @return {boolean} False if it is not a valid JSON or true if all went fine
      */
-    parseJSON(jotason) {
-        const json = JSON.parse(jotason);
+    parseJSON(raw) {
+        const json = JSON.parse(raw);
         if(json.vcalendar == undefined) return false;
-        this.vcalendar = json.vcalendar;
+        this.cal = json.vcalendar;
         return true;
     }
 }
