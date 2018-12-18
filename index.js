@@ -71,7 +71,128 @@ bot.command("prueba", ctx => {
       return ctx.reply(err);
     });
 });
+bot.command("geteventday", ctx => {
+  ctx.reply(
+     "Primero tenemos que comprobar que estas autenticado",
+     Markup.inlineKeyboard([
+       Markup.callbackButton("➡️ Autenticar", "auth")
+     ]).extra()
+   );
+   bot.use(getEventDayStage.middleware());
+});
 
+function returnDate(infoEvent) {  
+  console.log(infoEvent)
+  let anyo = infoEvent[0].substring(0,4)
+  let mes = infoEvent[0].substring(4, 6)
+  let dia = infoEvent[0].substring(6, 8)
+  return dia + "-" + mes + "-" + anyo
+}
+
+function returnTime(infoEvent) {
+  let hora = infoEvent[0].substring(9, 11)
+  let min = infoEvent[0].substring(11, 13)
+  //let sec = infoEvent[0].substring(13, 15)
+  return hora + ":" + min// + ":" + sec
+}
+const getEventDayWizard = new WizardScene(
+  "geteventday-wizard",
+  ctx => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      if (ctx.callbackQuery.message)
+        ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+    }
+    //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
+    ctx.scene.session.infoEvent = ["dtstart", "organizer", "summary"];
+    
+    isAuth(ctx.from.id)
+      .then(auth => {
+        ctx.reply("Todo Correcto ✅. Indica el día del Evento");
+        ctx.scene.session.infoEvent[1] = auth;
+        return ctx.wizard.next();
+      })
+      .catch(err => {
+        ctx.reply("Debes de estar autenticado para realizar esta acción");
+        return ctx.scene.leave();
+      });
+  },
+  ctx => {
+    //getEventsDat(day)
+    ctx.scene.session.eventsDay = [['20181222T184500Z', "john@do.e", "Sorteo de Navidad"], ['20181222T084500Z', "john@do.e", "Cena de Sorteo de Navidad"]]
+    ctx.scene.session.horaOrden = []
+    for (let i = 0; i < ctx.scene.session.eventsDay.length; i++) {
+      ctx.scene.session.horaOrden[i] = {id:ctx.scene.session.eventsDay[i][0], order:i}
+    }
+    ctx.scene.session.horaOrden.sort(function(a,b){
+      var x = a.id.toLowerCase();
+      var y = b.id.toLowerCase();
+      if (x < y) {return -1;}
+      if (x > y) {return 1;}
+      return 0;
+    })
+    ctx.scene.session.stringReturn = "";
+    ctx.scene.session.stringReturn += "`" + returnDate(ctx.scene.session.eventsDay[0]) + "`</br>\n"
+    for (let i = 0; i < ctx.scene.session.horaOrden.length; i++) {
+        let order = ctx.scene.session.horaOrden[i].order
+        let infoEvent = ctx.scene.session.eventsDay[order]
+        ctx.replyWithMarkdown(
+          "`" + returnTime(infoEvent) + "`\n\t" + ctx.scene.session.eventsDay[order][2] + "\n",
+          Markup.inlineKeyboard([    
+          Markup.callbackButton("✉️ Compartir", "share"),
+          Markup.callbackButton("✏️ Editar", "edit"),
+          Markup.callbackButton("❌ Cancelar", "delete")
+          ]).extra());
+
+    }
+    //ctx.replyWithMarkdown(ctx.scene.session.stringReturn)
+  }
+);
+
+//Get Event
+bot.command("getevent", ctx => {
+  ctx.reply(
+     "Primero tenemos que comprobar que estas autenticado",
+     Markup.inlineKeyboard([
+       Markup.callbackButton("➡️ Autenticar", "auth")
+     ]).extra()
+   );
+   bot.use(getEventStage.middleware());
+});
+
+const getEventWizard = new WizardScene(
+  "getevent-wizard",
+  ctx => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      if (ctx.callbackQuery.message)
+        ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+    }
+    //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
+    ctx.scene.session.infoEvent = ["dtstart", "organizer", "summary"];
+    
+    isAuth(ctx.from.id)
+      .then(auth => {
+        ctx.reply("Todo Correcto ✅. Indica el Identificador del Evento");
+        ctx.scene.session.infoEvent[1] = auth;
+        return ctx.wizard.next();
+      })
+      .catch(err => {
+        ctx.reply("Debes de estar autenticado para realizar esta acción");
+        return ctx.scene.leave();
+      });
+  },
+  ctx => {
+    ctx.scene.session.infoEvent = ['20181222T084500Z', "john@do.e", "Sorteo de Navidad"]
+    //getEvent(id)
+    ctx.scene.session.anyo = ctx.scene.session.infoEvent[0].substring(0,4)
+    ctx.scene.session.mes = ctx.scene.session.infoEvent[0].substring(4, 6)
+    ctx.scene.session.dia = ctx.scene.session.infoEvent[0].substring(6, 8)
+    ctx.scene.session.hora = ctx.scene.session.infoEvent[0].substring(9, 11)
+    ctx.scene.session.min = ctx.scene.session.infoEvent[0].substring(11, 13)
+    ctx.scene.session.sec = ctx.scene.session.infoEvent[0].substring(13, 15)
+    ctx.reply(ctx.scene.session.anyo + "-" + ctx.scene.session.mes + "-" + ctx.scene.session.dia + " " + ctx.scene.session.hora + ":" + ctx.scene.session.min + ":" + ctx.scene.session.sec + "\n" + ctx.scene.session.infoEvent[2])
+  }
+);
+// Add Event
 bot.command("addevent", ctx => {
   ctx.reply(
     "Primero tenemos que comprobar que estas autenticado",
@@ -368,6 +489,12 @@ addEventWizard.command("cancel", ctx => ctx.scene.leave());
 addEventWizard.command("back", ctx => ctx.wizard.back());
 const addEventStage = new Stage([addEventWizard], {
   default: "addevent-wizard"
+});
+const getEventStage = new Stage([getEventWizard], {
+  default: "getevent-wizard"
+});
+const getEventDayStage = new Stage([getEventDayWizard], {
+  default: "geteventday-wizard"
 });
 bot.use(session());
 bot.startPolling();
