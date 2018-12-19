@@ -173,8 +173,16 @@ const getEventDayWizard = new WizardScene(
           return ctx.scene.leave()
         } else if(part[0].match("delete")) {
           try {
-            //TODO llamar a metodo delete
-            //ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+            dbVevent.deleteVEvent(part[1])
+            .then(res => {
+              ctx.replyWithMarkdown("EL Evento se ha eliminado correctamente ✅");
+  
+              return ctx.scene.leave();
+            })
+            .catch(err => {
+              ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+              return ctx.scene.leave();
+            });
             console.log("delete")
           } catch (error) {
             console.log(error);
@@ -269,8 +277,16 @@ const getEventWizard = new WizardScene(
         return ctx.scene.leave()
       } else if(part[0].match("delete")) {
         try {
-          //TODO llamar a metodo delete
-          //ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+          dbVevent.deleteVEvent(part[1])
+          .then(res => {
+            ctx.replyWithMarkdown("EL Evento se ha eliminado correctamente ✅");
+
+            return ctx.scene.leave();
+          })
+          .catch(err => {
+            ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+            return ctx.scene.leave();
+          });
           console.log("delete")
         } catch (error) {
           console.log(error);
