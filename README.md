@@ -39,6 +39,10 @@ Crear un fichero config.json en el path raíz del proyecto con los siguientes pa
   "EMAIL_PASSWORD": "password"
 }
 ```
+### Necesitas
+
+1. MongoDB
+1. Bot de Telegram
 
 ### How to work
 
