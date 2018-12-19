@@ -219,17 +219,20 @@ const getEventDayWizard = new WizardScene(
           return ctx.scene.leave();
         } else if (part[0].match("delete")) {
           try {
-            dbVevent.deleteVEvent(part[1])
-            .then(res => {
-              ctx.replyWithMarkdown("EL Evento se ha eliminado correctamente ✅");
-  
-              return ctx.scene.leave();
-            })
-            .catch(err => {
-              ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
-              return ctx.scene.leave();
-            });
-            console.log("delete")
+            dbVevent
+              .deleteVEvent(part[1])
+              .then(res => {
+                ctx.replyWithMarkdown(
+                  "EL Evento se ha eliminado correctamente ✅"
+                );
+
+                return ctx.scene.leave();
+              })
+              .catch(err => {
+                ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+                return ctx.scene.leave();
+              });
+            console.log("delete");
           } catch (error) {
             console.log(error);
           }
@@ -264,17 +267,6 @@ const getEventDayWizard = new WizardScene(
     return ctx.scene.leave();
   }
 );
-
-//Get Event
-bot.command("getevent", ctx => {
-  ctx.reply(
-    "Primero tenemos que comprobar que estas autenticado",
-    Markup.inlineKeyboard([
-      Markup.callbackButton("➡️ Autenticar", "auth")
-    ]).extra()
-  );
-  bot.use(getEventStage.middleware());
-});
 
 const getEventWizard = new WizardScene(
   "getevent-wizard",
@@ -337,6 +329,7 @@ const getEventWizard = new WizardScene(
       .catch(err => console.log(err));
   },
   ctx => {
+    console.log(ctx);
     if (ctx.callbackQuery && ctx.callbackQuery.data) {
       const part = callbackQuery.data.split("-");
       if (part[0].match("exit")) {
@@ -348,17 +341,20 @@ const getEventWizard = new WizardScene(
         return ctx.scene.leave();
       } else if (part[0].match("delete")) {
         try {
-          dbVevent.deleteVEvent(part[1])
-          .then(res => {
-            ctx.replyWithMarkdown("EL Evento se ha eliminado correctamente ✅");
+          dbVevent
+            .deleteVEvent(part[1])
+            .then(res => {
+              ctx.replyWithMarkdown(
+                "EL Evento se ha eliminado correctamente ✅"
+              );
 
-            return ctx.scene.leave();
-          })
-          .catch(err => {
-            ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
-            return ctx.scene.leave();
-          });
-          console.log("delete")
+              return ctx.scene.leave();
+            })
+            .catch(err => {
+              ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+              return ctx.scene.leave();
+            });
+          console.log("delete");
         } catch (error) {
           console.log(error);
         }
@@ -390,16 +386,6 @@ const getEventWizard = new WizardScene(
     }
   }
 );
-// Add Event
-bot.command("addevent", ctx => {
-  ctx.reply(
-    "Primero tenemos que comprobar que estas autenticado",
-    Markup.inlineKeyboard([
-      Markup.callbackButton("➡️ Autenticar", "auth")
-    ]).extra()
-  );
-  bot.use(addEventStage.middleware());
-});
 
 const stepTituloAddEventHandler = new Composer();
 stepTituloAddEventHandler.use(ctx => {
@@ -566,9 +552,7 @@ const addEventWizard = new WizardScene(
       if (ctx.callbackQuery.data.match("cancel")) return ctx.scene.leave();
       else if (ctx.callbackQuery.data.match("back")) {
         try {
-          console.log(ctx);
           ctx.deleteMessage(ctx.callbackQuery.message.message_id);
-          console.log(ctx);
         } catch (error) {
           console.log(error);
         }
@@ -676,7 +660,9 @@ const addEventWizard = new WizardScene(
       .then(res => {
         ctx.replyWithMarkdown("La id del evento creado es:");
         ctx.replyWithMarkdown("`" + res + "`");
-        return ctx.scene.leave();
+        console.log(ctx.scene);
+        ctx.scene.leave();
+        console.log(ctx.scene);
       })
       .catch(err => {
         ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
@@ -686,14 +672,42 @@ const addEventWizard = new WizardScene(
 );
 addEventWizard.command("cancel", ctx => ctx.scene.leave());
 addEventWizard.command("back", ctx => ctx.wizard.back());
-const addEventStage = new Stage([addEventWizard], {
-  default: "addevent-wizard"
-});
-const getEventStage = new Stage([getEventWizard], {
-  default: "getevent-wizard"
-});
-const getEventDayStage = new Stage([getEventDayWizard], {
-  default: "geteventday-wizard"
-});
+// const addEventStage = new Stage([addEventWizard], {
+//   default: "addevent-wizard"
+// });
+// const getEventStage = new Stage([getEventWizard], {
+//   default: "getevent-wizard"
+// });
+// const getEventDayStage = new Stage([getEventDayWizard], {
+//   default: "geteventday-wizard"
+// });
+
+const stage = new Stage([addEventWizard, getEventWizard, getEventDayWizard]);
 bot.use(session());
+bot.use(stage.middleware());
+// Add Event
+bot.command("addevent", ctx => {
+  // ctx.reply(
+  //   "Primero tenemos que comprobar que estas autenticado",
+  //   Markup.inlineKeyboard([
+  //     Markup.callbackButton("➡️ Autenticar", "auth")
+  //   ]).extra()
+  // );
+  console.log(ctx);
+  Stage.enter("addevent-wizard")(ctx);
+  //bot.use(addEventStage.middleware());
+});
+
+//Get Event
+bot.command("getevent", ctx => {
+  // ctx.reply(
+  //   "Primero tenemos que comprobar que estas autenticado",
+  //   Markup.inlineKeyboard([
+  //     Markup.callbackButton("➡️ Autenticar", "auth")
+  //   ]).extra()
+  // );
+  // bot.use(getEventStage.middleware());
+  Stage.enter("getevent-wizard")(ctx);
+});
+
 bot.startPolling();
