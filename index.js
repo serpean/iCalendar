@@ -72,6 +72,7 @@ bot.command("prueba", ctx => {
       return ctx.reply(err);
     });
 });
+
 bot.command("geteventday", ctx => {
   ctx.reply(
      "Primero tenemos que comprobar que estas autenticado",
@@ -82,19 +83,34 @@ bot.command("geteventday", ctx => {
    bot.use(getEventDayStage.middleware());
 });
 
-function returnDate(infoEvent) {  
-  let anyo = infoEvent[0].substring(0,4)
-  let mes = infoEvent[0].substring(5, 7)
-  let dia = infoEvent[0].substring(8, 10)
+function returnDate(dtstart) { 
+  let anyo = dtstart.substring(0,4)
+  let mes = dtstart.substring(5, 7)
+  let dia = dtstart.substring(8, 10)
   return dia + "-" + mes + "-" + anyo
 }
 
-function returnTime(infoEvent) {
-  let hora = infoEvent[0].substring(11, 13)
-  let min = infoEvent[0].substring(14, 16)
+function returnTime(dtstart) {
+  let hora = dtstart.substring(11, 13)
+  let min = dtstart.substring(14, 16)
   //let sec = infoEvent[0].substring(13, 15)
   return hora + ":" + min// + ":" + sec
 }
+
+const stepShareEventHandler = new Composer();
+stepShareEventHandler.use(ctx => {
+  ctx.scene.session.shareEmails = ctx.message.text;
+  ctx.replyWithMarkdown(
+    "Los Correos son: `" + ctx.message.text + "`",
+    Markup.inlineKeyboard([
+      Markup.callbackButton("➡️ Correcto", "next"),
+      Markup.callbackButton("✏️ Editar", "back"),
+      Markup.callbackButton("❌ Cancelar", "cancel")
+    ]).extra()
+  );
+  return ctx.wizard.next();
+});
+
 const getEventDayWizard = new WizardScene(
   "geteventday-wizard",
   ctx => {
@@ -102,13 +118,11 @@ const getEventDayWizard = new WizardScene(
       if (ctx.callbackQuery.message)
         ctx.deleteMessage(ctx.callbackQuery.message.message_id);
     }
-    //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
-    ctx.scene.session.infoEvent = ["dtstart", "organizer", "summary"];
     
     isAuth(ctx.from.id)
       .then(auth => {
-        ctx.reply("Todo Correcto ✅. Indica el día del Evento");
-        ctx.scene.session.infoEvent[1] = auth;
+        ctx.reply("Todo Correcto ✅. Indica el día del que quieres secuperar los Eventos (dd-mm-yyyy)");
+        ctx.scene.session.email = auth;
         return ctx.wizard.next();
       })
       .catch(err => {
@@ -117,11 +131,13 @@ const getEventDayWizard = new WizardScene(
       });
   },
   ctx => {
-    //getEventsDay(day)
-    ctx.scene.session.eventsDay = [['2018-12-22T08:45:00.000Z', "john@do.e", "Sorteo de Navidad", "idEvento1"], ['2018-12-22T18:45:00.000Z', "john@do.e", "Cena de Sorteo de Navidad", "idEvento2"]]
+    const fecha = ctx.message.text.split("-")
+    ctx.replyWithMarkdown("`" + ctx.message.text + "`")
+    const jsonEventos = dbVevent.findVeventByDay(new Date(fecha[2], fecha[1], fecha[0]))
+    ctx.scene.session.eventsDay = [{dtstart:'2018-12-22T08:45:00.000Z', organizer:"john@do.e", summary:"Sorteo de Navidad", uid:"idEvento1"},{dtstart:'2018-12-22T22:15:00.000Z', organizer:"john@do.e", summary:"Cena de Navidad", uid:"idEvento1"}]
     ctx.scene.session.horaOrden = []
     for (let i = 0; i < ctx.scene.session.eventsDay.length; i++) {
-      ctx.scene.session.horaOrden[i] = {id:ctx.scene.session.eventsDay[i][0], order:i}
+      ctx.scene.session.horaOrden[i] = {id:ctx.scene.session.eventsDay[i].dtstart, order:i}
     }
     ctx.scene.session.horaOrden.sort(function(a,b){
       var x = a.id.toLowerCase();
@@ -129,20 +145,65 @@ const getEventDayWizard = new WizardScene(
       if (x < y) {return -1;}
       if (x > y) {return 1;}
       return 0;
-    })
-    ctx.scene.session.stringReturn = "";
-    ctx.scene.session.stringReturn += "`" + returnDate(ctx.scene.session.eventsDay[0]) + "`</br>\n"
+    })    
     for (let i = 0; i < ctx.scene.session.horaOrden.length; i++) {
         let order = ctx.scene.session.horaOrden[i].order
         ctx.replyWithMarkdown(
-          "`" + returnTime(ctx.scene.session.eventsDay[order]) + "`\n\t" + ctx.scene.session.eventsDay[order][2] + "\n",
+          "`" + returnTime(ctx.scene.session.eventsDay[order].dtstart) + "` - " + ctx.scene.session.eventsDay[order].summary,
           Markup.inlineKeyboard([    
-          Markup.callbackButton("✉️ Compartir", "share-" + ctx.scene.session.eventsDay[order][3]),
-          Markup.callbackButton("✏️ Editar", "edit-" + ctx.scene.session.eventsDay[order][3]),
-          Markup.callbackButton("❌ Cancelar", "delete-" + ctx.scene.session.eventsDay[order][3])
+          Markup.callbackButton("✉️ Compartir", "share-" + ctx.scene.session.eventsDay[order].uid),
+          //Markup.callbackButton("✏️ " + ctx.scene.session.eventsDay[order][2], "edit-" + order),
+          Markup.callbackButton("❌ Eliminar", "delete-" + ctx.scene.session.eventsDay[order].uid)
           ]).extra());
     }
-    ctx.replyWithMarkdown("", Markup.inlineKeyboard([Markup.callbackButton("🔙 Salir", "exit")]).extra());
+    ctx.replyWithMarkdown("Salir", Markup.inlineKeyboard([Markup.callbackButton("🔙", "exit")]).extra());
+    return ctx.wizard.next()
+  },
+  (ctx) => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      if (ctx.callbackQuery.data.match("exit"))  {
+        ctx.reply("Ha Salido con Éxito")
+        return ctx.scene.leave();
+      }
+      else {
+        const part = ctx.callbackQuery.data.split("-")
+        if (part[0].match("edit")) {
+          //TODO
+          console.log("edit")          
+          return ctx.scene.leave()
+        } else if(part[0].match("delete")) {
+          try {
+            //TODO llamar a metodo delete
+            //ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+            console.log("delete")
+          } catch (error) {
+            console.log(error);
+          }
+          return ctx.scene.leave();
+        }
+      }
+    }//Ha Compartido
+    //TODO PEDIR EMAIL PARA COMPARTIR
+    ctx.reply("Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com")
+    return ctx.wizard.next()
+  },
+  stepShareEventHandler,
+  (ctx) => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      if (ctx.callbackQuery.data.match("cancel")) return ctx.scene.leave();
+      else if (ctx.callbackQuery.data.match("back")) {
+        try {
+          ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+        } catch (error) {
+          console.log(error);
+        }
+        ctx.reply("Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com")
+        return ctx.wizard.back();
+      }
+    }
+    //LLamar a metodo para el envío
+    ctx.wizard.leave()
+    return ctx.scene.leave()
   }
 );
 
@@ -179,15 +240,63 @@ const getEventWizard = new WizardScene(
       });
   },
   ctx => {
-    ctx.scene.session.infoEvent = ['2018-12-22T08:45:00.000Z', "john@do.e", "Sorteo de Navidad"]
+    //ctx.scene.session.infoEvent = dbVevent.findVEvent(ctx.message.text)
+    //Ejemplo
+    ctx.scene.session.infoEvent = {dtstart:'2018-12-22T08:45:00.000Z', organizer:"john@do.e", summary:"Sorteo de Navidad", uid:"1"}
+    
     //getEvent(id)
-    ctx.scene.session.anyo = ctx.scene.session.infoEvent[0].substring(0, 4)
-    ctx.scene.session.mes  = ctx.scene.session.infoEvent[0].substring(4, 6)
-    ctx.scene.session.dia  = ctx.scene.session.infoEvent[0].substring(6, 8)
-    ctx.scene.session.hora = ctx.scene.session.infoEvent[0].substring(9, 11)
-    ctx.scene.session.min  = ctx.scene.session.infoEvent[0].substring(11, 13)
-    ctx.scene.session.sec  = ctx.scene.session.infoEvent[0].substring(13, 15)
-    ctx.reply(returnDate(ctx.scene.session.infoEvent) + " " + returnTime(ctx.scene.session.infoEvent) + "\n" + ctx.scene.session.infoEvent[2])
+    ctx.replyWithMarkdown(
+      "`" + returnTime(ctx.scene.session.infoEvent.dtstart) + "`\n\t" + ctx.scene.session.infoEvent.summary + "\n",
+      Markup.inlineKeyboard([    
+      Markup.callbackButton("✉️ Compartir", "share-" + ctx.scene.session.infoEvent[3]),
+      //Markup.callbackButton("✏️ Editar", "edit-" + ctx.scene.session.infoEvent[3]),
+      Markup.callbackButton("❌ Cancelar", "delete-" + ctx.scene.session.infoEvent[3]),
+      Markup.callbackButton("🔙 Salir", "exit")
+      ]).extra());
+    //ctx.reply(returnDate(ctx.scene.session.infoEvent) + " " + returnTime(ctx.scene.session.infoEvent) + "\n" + ctx.scene.session.infoEvent[2])
+    return ctx.wizard.next()
+  },
+  (ctx) => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      const part = callbackQuery.data.split("-")
+      if (part[0].match("exit"))  {
+        ctx.reply("Ha salido con Éxito")
+        return ctx.scene.leave();
+      }
+      else if (part[0].match("edit")) {
+        //TODO
+        console.log("edit")
+        return ctx.scene.leave()
+      } else if(part[0].match("delete")) {
+        try {
+          //TODO llamar a metodo delete
+          //ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+          console.log("delete")
+        } catch (error) {
+          console.log(error);
+        }
+        return ctx.scene.leave();
+      }
+    }//Ha Compartido
+    //TODO PEDIR EMAIL PARA COMPARTIR
+    ctx.reply("Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com")
+  },
+  stepShareEventHandler,
+  (ctx) => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data) {
+      if (ctx.callbackQuery.data.match("cancel")) return ctx.scene.leave();
+      else if (ctx.callbackQuery.data.match("back")) {
+        try {
+          console.log(ctx);
+          ctx.deleteMessage(ctx.callbackQuery.message.message_id);
+          console.log(ctx);
+        } catch (error) {
+          console.log(error);
+        }
+        ctx.reply("Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com")
+        return ctx.wizard.back();
+      }
+    }
   }
 );
 // Add Event
