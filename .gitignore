@@ -62,3 +62,4 @@ typings/
 
 # server configuration
 config.json
+package-lock.json
