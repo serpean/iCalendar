@@ -73,6 +73,7 @@ bot.command("prueba", ctx => {
     });
 });
 
+/*
 bot.command("geteventday", ctx => {
   ctx.reply(
     "Primero tenemos que comprobar que estas autenticado",
@@ -81,7 +82,7 @@ bot.command("geteventday", ctx => {
     ]).extra()
   );
   bot.use(getEventDayStage.middleware());
-});
+});*/
 
 function returnDate(dtstart) {
   let anyo = dtstart.substring(0, 4);
@@ -276,7 +277,7 @@ const getEventWizard = new WizardScene(
         ctx.deleteMessage(ctx.callbackQuery.message.message_id);
     }
     //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
-    ctx.scene.session.infoEvent = ["dtstart", "organizer", "summary"];
+    ctx.scene.session.infoEvent = {dtstart: new Date().toISOString(), organizer:"john@do.e", summary:"sorteo de navidad"};
 
     isAuth(ctx.from.id)
       .then(auth => {
@@ -329,36 +330,37 @@ const getEventWizard = new WizardScene(
       .catch(err => console.log(err));
   },
   ctx => {
-    console.log(ctx);
+    //console.log(ctx);
     if (ctx.callbackQuery && ctx.callbackQuery.data) {
-      const part = callbackQuery.data.split("-");
-      if (part[0].match("exit")) {
+      if (ctx.callbackQuery.data.match("exit")) {
         ctx.reply("Ha salido con Éxito");
         return ctx.scene.leave();
-      } else if (part[0].match("edit")) {
-        //TODO
-        console.log("edit");
-        return ctx.scene.leave();
-      } else if (part[0].match("delete")) {
-        try {
-          dbVevent
-            .deleteVEvent(part[1])
-            .then(res => {
-              ctx.replyWithMarkdown(
-                "EL Evento se ha eliminado correctamente ✅"
-              );
+      } else {
+        const part = callbackQuery.data.split("-");
+        if (part[0].match("edit")) {
+          //TODO
+          console.log("edit");
+          return ctx.scene.leave();
+        } else if (part[0].match("delete")) {
+          try {
+            dbVevent
+              .deleteVEvent(part[1])
+              .then(res => {
+                ctx.replyWithMarkdown(
+                  "EL Evento se ha eliminado correctamente ✅");  
 
-              return ctx.scene.leave();
-            })
+                return ctx.scene.leave();
+             })
             .catch(err => {
-              ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
-              return ctx.scene.leave();
-            });
-          console.log("delete");
-        } catch (error) {
-          console.log(error);
+               ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+               return ctx.scene.leave();
+             });
+           console.log("delete");
+          } catch (error) {
+           console.log(error);
+          }
+          return ctx.scene.leave();
         }
-        return ctx.scene.leave();
       }
     } //Ha Compartido
     //TODO PEDIR EMAIL PARA COMPARTIR
@@ -708,6 +710,17 @@ bot.command("getevent", ctx => {
   // );
   // bot.use(getEventStage.middleware());
   Stage.enter("getevent-wizard")(ctx);
+});
+
+bot.command("geteventday", ctx => {
+  // ctx.reply(
+  //   "Primero tenemos que comprobar que estas autenticado",
+  //   Markup.inlineKeyboard([
+  //     Markup.callbackButton("➡️ Autenticar", "auth")
+  //   ]).extra()
+  // );
+  // bot.use(getEventStage.middleware());
+  Stage.enter("geteventday-wizard")(ctx);
 });
 
 bot.startPolling();
