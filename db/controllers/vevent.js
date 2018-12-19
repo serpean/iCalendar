@@ -14,7 +14,6 @@ const saveVEvent = params => {
     TempVevent.dtstart = params.dtstart;
     console.log(TempVevent.dtstart);
     TempVevent.dtstamp = params.dtstamp;
-    console.log(TempVevent);
 
     TempVevent.save(err => {
       if (err) {
@@ -33,7 +32,7 @@ const saveVEvent = params => {
  */
 const findVEvent = uid => {
   return new Promise((resolve, reject) => {
-    Vevent.find({ uid: uid }).exec((err, event) => {
+    Vevent.findOne({ uid: uid }).exec((err, event) => {
       if (err) reject(err);
       // TODO: quitar _id
       resolve(event);

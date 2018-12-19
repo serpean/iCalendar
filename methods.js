@@ -4,11 +4,11 @@ const veventController = require("./db/controllers/vevent");
 //'publish', 'request', 'reply', 'add', 'cancel', 'refresh', 'counter', 'declinecounter'
 
 /**
-  * Publishes an event into a calendar
-  * @param dtstart Value of the date the event will start 
-  * @param organizer Name of the organizer of the event/calendar
-  * @param summary Value of the summary which describes the event
-  */
+ * Publishes an event into a calendar
+ * @param dtstart Value of the date the event will start
+ * @param organizer Name of the organizer of the event/calendar
+ * @param summary Value of the summary which describes the event
+ */
 const vEventPub = (dtstart, organizer, summary) => {
   return new Promise((resolve, reject) => {
     const uid = Date.now();
@@ -20,7 +20,7 @@ const vEventPub = (dtstart, organizer, summary) => {
     //const lastEvent = ev[ev.length - 1];
     const params = {
       uid: uid,
-      sumary: summary,
+      summary: summary,
       organizer: organizer,
       dtstart: dtstart,
       dtstamp: dtstamp
@@ -39,7 +39,7 @@ const vEventPub = (dtstart, organizer, summary) => {
 
 //TODO
 function vTodoPub(dtstart, organizer, priority, summary) {
-  return new Promise((resolve, reject) => {  
+  return new Promise((resolve, reject) => {
     const cal = new msg.Calendar("tempcal", 1.0);
     cal.setMethod("publish");
     const uid = Date.now();
@@ -131,7 +131,15 @@ function vTodoReq(attendee, dtstart, organizer, priority, summary) {
     cal.setMethod("request");
     const uid = Date.now();
     const dtstamp = new Date(uid);
-    cal.addVtodo([attendee, dtstamp, dtstart, organizer, priority, summary, uid]);
+    cal.addVtodo([
+      attendee,
+      dtstamp,
+      dtstart,
+      organizer,
+      priority,
+      summary,
+      uid
+    ]);
     //const ev = calendar.toJson().vcalendar.vevent;
     //const lastEvent = ev[ev.length - 1];
     const params = {
