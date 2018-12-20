@@ -61,5 +61,6 @@ typings/
 .next
 
 # server configuration
-config.json
 config/config.json
+package-lock.json
+.vscode
