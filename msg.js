@@ -799,6 +799,7 @@ module.exports.Calendar = class Calendar {
    * @return {boolean} True if all went fine or false if there is no VEVENT or wrong parameter name
    */
   setVeventParam(id, name, value) {
+    const method = this.getMethod();
     if (this.events[method].vevent.optional.indexOf(name) == -1)
       if (this.events[method].vevent.required.indexOf(name) == -1) return false;
     if (this.cal.vevent == undefined || this.cal.vevent.length <= id)
@@ -882,6 +883,7 @@ module.exports.Calendar = class Calendar {
    * @return {boolean} False if there is no paramter with that name or there is no VTODO defined
    */
   setVtodoParam(id, name, value) {
+    const method = this.getMethod();
     if (this.events[method].vtodo.optional.indexOf(name) == -1)
       if (this.events[method].vtodo.required.indexOf(name) == -1) return false;
     if (this.cal.vtodo == undefined || this.cal.vtodo.length <= id)
@@ -938,6 +940,7 @@ module.exports.Calendar = class Calendar {
    * @return {boolean} False if there is no VFREE/parameter name allowed or true if all went fine
    */
   setVfreeParam(id, name, value) {
+    const method = this.getMethod();
     if (this.events[method].vfreebusy.optional.indexOf(name) == -1)
       if (this.events[method].vfreebusy.required.indexOf(name) == -1)
         return false;
@@ -995,6 +998,7 @@ module.exports.Calendar = class Calendar {
    * @return {boolean} False if there is no VJOURNAL defined/parameter name not allowed or true if all went fine
    */
   setVjournalParam(id, name, value) {
+    const method = this.getMethod();
     if (this.events[method].vjournal.optional.indexOf(name) == -1)
       if (this.events[method].vjournal.required.indexOf(name) == -1)
         return false;
@@ -1035,7 +1039,7 @@ module.exports.Calendar = class Calendar {
   parseJSON(jotason) {
     const json = JSON.parse(jotason);
     if (json.vcalendar == undefined) return false;
-    this.vcalendar = json.vcalendar;
+    this.cal = json.vcalendar;
     return true;
   }
 };
