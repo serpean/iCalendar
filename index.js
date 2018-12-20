@@ -1,8 +1,16 @@
-const TelegramBot = require("node-telegram-bot-api");
-const config = require("./config.json");
-const token = config.BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
 const mongoose = require("mongoose");
+const TelegramBot = require("node-telegram-bot-api");
+const { isConfigOK } = require("./config/checker");
+
+if(!isConfigOK()){
+    console.error('Please update config file with real data');
+    process.exit(1);
+} else {
+    const config = require("./config/config.json");
+}
+
+const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
+
 const {
   register,
   confirmUser,
@@ -11,7 +19,7 @@ const {
 } = require("./authentication/controllers/register");
 
 mongoose.connect(
-  "mongodb://localhost/icalendar",
+  config.MONGO_URI,
   { useNewUrlParser: true }
 );
 

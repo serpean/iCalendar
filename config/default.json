@@ -1,0 +1,6 @@
+{
+	"BOT_TOKEN": "token",
+	"EMAIL": "email",
+	"EMAIL_PASSWORD": "password",
+	"MONGO_URI": "mongodb://localhost/icalendar"
+}
