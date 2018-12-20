@@ -1,4 +1,10 @@
-const config = require("./config.json");
+const { isConfigOK } = require("./config/checker");
+if (!isConfigOK()) {
+  console.error("Please update config file with real data");
+  process.exit(1);
+}
+
+const config = require("./config/config.json");
 const token = config.BOT_TOKEN;
 const mongoose = require("mongoose");
 const Calendar = require("./calendarUI/calendarUI");
@@ -12,15 +18,6 @@ const Markup = require("telegraf/markup");
 const WizardScene = require("telegraf/scenes/wizard");
 const Router = require("telegraf/router");
 const Extra = require("telegraf/extra");
-if(!isConfigOK()){
-    console.error('Please update config file with real data');
-    process.exit(1);
-} else {
-    const config = require("./config/config.json");
-}
-
-const bot = new TelegramBot(config.BOT_TOKEN, { polling: true });
-
 const {
   register,
   confirmUser,
