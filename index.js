@@ -136,9 +136,6 @@ const getEventDayWizard = new WizardScene(
   ctx => {
     const fecha = ctx.message.text.split("-");
     ctx.replyWithMarkdown("`" + ctx.message.text + "`");
-    console.log(fecha[2]);
-    console.log(fecha[1]);
-    console.log(fecha[0]);
     dbVevent
       .findVeventByDay(new Date(fecha[2], fecha[1] - 1, fecha[0]))
       .then(res => {
@@ -160,57 +157,57 @@ const getEventDayWizard = new WizardScene(
         ctx.scene.session.horaOrden = [];
         for (let i = 0; i < ctx.scene.session.eventsDay.length; i++) {
           ctx.scene.session.horaOrden[i] = {
-            id: ctx.scene.session.eventsDay[i].dtstart,
-            order: i
+            date: ctx.scene.session.eventsDay[i].dtstart,
+            id: i
           };
         }
-        ctx.scene.session.horaOrden.sort(function(a, b) {
-          var x = a.id.toLowerCase();
-          var y = b.id.toLowerCase();
-          if (x < y) {
-            return -1;
-          }
-          if (x > y) {
-            return 1;
-          }
-          return 0;
+        ctx.scene.session.horaOrden.sort((a, b) => {
+          var x = new Date(a.date);
+          var y = new Date(b.date);
+          return x < y ? -1 : x > y ? 1 : 0;
         });
         for (let i = 0; i < ctx.scene.session.horaOrden.length; i++) {
-          let order = ctx.scene.session.horaOrden[i].order;
+          //let order = ctx.scene.session.horaOrden[i].order;
           ctx.replyWithMarkdown(
-            "`" +
+            "Hora: `" +
               returnTime(
-                new Date(
-                  ctx.scene.session.eventsDay[order].dtstart
-                ).toISOString()
+                new Date(ctx.scene.session.eventsDay[i].dtstart).toISOString()
               ) +
-              "` - " +
-              ctx.scene.session.eventsDay[order].summary,
+              "` - Título: `" +
+              ctx.scene.session.eventsDay[i].summary +
+              "` - ID: `" +
+              ctx.scene.session.eventsDay[i].uid +
+              "`",
             Markup.inlineKeyboard([
               Markup.callbackButton(
                 "✉️ Compartir",
-                "share-" + ctx.scene.session.eventsDay[order].uid
+                "share-" + ctx.scene.session.eventsDay[i].uid
               ),
               //Markup.callbackButton("✏️ " + ctx.scene.session.eventsDay[order][2], "edit-" + order),
               Markup.callbackButton(
                 "❌ Eliminar",
-                "delete-" + ctx.scene.session.eventsDay[order].uid
+                "delete-" + ctx.scene.session.eventsDay[i].uid
               )
             ]).extra()
           );
         }
+        return;
+      })
+      .catch(err => console.log(err))
+      .finally(() => {
         ctx.replyWithMarkdown(
           "Salir",
           Markup.inlineKeyboard([Markup.callbackButton("🔙", "exit")]).extra()
         );
         return ctx.wizard.next();
-      })
-      .catch(err => console.log(err));
+      });
   },
   ctx => {
+    let exit = false;
     if (ctx.callbackQuery && ctx.callbackQuery.data) {
       if (ctx.callbackQuery.data.match("exit")) {
         ctx.reply("Ha Salido con Éxito");
+        exit = true;
         return ctx.scene.leave();
       } else {
         const part = ctx.callbackQuery.data.split("-");
@@ -242,10 +239,12 @@ const getEventDayWizard = new WizardScene(
       }
     } //Ha Compartido
     //TODO PEDIR EMAIL PARA COMPARTIR
-    ctx.reply(
-      "Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com"
-    );
-    return ctx.wizard.next();
+    if (!exit) {
+      ctx.reply(
+        "Indicame los emails separados por comas de los destinatarios. EJ: bill@hotmail.com, gates@outlook.com"
+      );
+      return ctx.wizard.next();
+    }
   },
   stepShareEventHandler,
   ctx => {
@@ -264,7 +263,6 @@ const getEventDayWizard = new WizardScene(
       }
     }
     //LLamar a metodo para el envío
-    ctx.wizard.leave();
     return ctx.scene.leave();
   }
 );
@@ -277,7 +275,11 @@ const getEventWizard = new WizardScene(
         ctx.deleteMessage(ctx.callbackQuery.message.message_id);
     }
     //Estructura de Event  ['dtstamp','dtstart','organizer','summary','uid']
-    ctx.scene.session.infoEvent = {dtstart: new Date().toISOString(), organizer:"john@do.e", summary:"sorteo de navidad"};
+    ctx.scene.session.infoEvent = {
+      dtstart: new Date().toISOString(),
+      organizer: "john@do.e",
+      summary: "sorteo de navidad"
+    };
 
     isAuth(ctx.from.id)
       .then(auth => {
@@ -347,17 +349,18 @@ const getEventWizard = new WizardScene(
               .deleteVEvent(part[1])
               .then(res => {
                 ctx.replyWithMarkdown(
-                  "EL Evento se ha eliminado correctamente ✅");  
+                  "EL Evento se ha eliminado correctamente ✅"
+                );
 
                 return ctx.scene.leave();
-             })
-            .catch(err => {
-               ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
-               return ctx.scene.leave();
-             });
-           console.log("delete");
+              })
+              .catch(err => {
+                ctx.reply("Ha ocurrido un error, vuelve a intentarlo");
+                return ctx.scene.leave();
+              });
+            console.log("delete");
           } catch (error) {
-           console.log(error);
+            console.log(error);
           }
           return ctx.scene.leave();
         }

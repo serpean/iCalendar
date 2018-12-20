@@ -46,10 +46,19 @@ const findVEvent = uid => {
  */
 const findVeventByDay = date => {
   return new Promise((resolve, reject) => {
+    // TODO: More than one pearson
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    let gDate = new Date(year, month, day, 23, 59);
+    const lDate = new Date(year, month, day, 0, 0);
     Vevent.find({
-      dtstart: new Date(date)
+      dtstart: {
+        $lte: new Date(gDate),
+        $gte: new Date(lDate)
+      }
     })
-      .select("uid organizer dtstart")
+      .select("uid organizer dtstart summary")
       .exec((err, events) => {
         if (err) reject(err);
         resolve(events);
@@ -76,7 +85,7 @@ const findVeventsByMonth = date => {
         $gte: new Date(lDate)
       }
     })
-      .select("uid organizer dtstart")
+      .select("uid organizer dtstart summary")
       .exec((err, events) => {
         if (err) reject(err);
         resolve(events);
