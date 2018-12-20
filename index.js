@@ -32,6 +32,10 @@ mongoose.connect(
 
 const bot = new Telegraf(token);
 
+bot.command("start", ctx => {
+  ctx.replyWithMarkdown("Para comenzar, utiliza el comando `\register tuemail@email.com` para darte de alta.");
+});
+
 let email;
 bot.command("register", ctx => {
   // TODO: Verify real email
