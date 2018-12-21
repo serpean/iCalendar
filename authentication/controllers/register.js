@@ -26,14 +26,14 @@ const register = (telegramId, email) => {
 
     // Search the email
     User.findOne({ email: email })
-      .select("telegramId")
+      .select("telegramId confirimed")
       .exec((err, res) => {
         // If we receive a different id, the email is in use
         if (res) {
           if (res.telegramId != telegramId)
             return reject("Este email ya está en uso");
           // If we receive the same account, you are registered
-          else if (res.telegramId == telegramId)
+          else if (res.telegramId == telegramId && res.register == true)
             return reject("Ya estás registrado");
         }
       });
