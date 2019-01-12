@@ -3,7 +3,8 @@ const Vevent = require("../models/vevent");
 /**
  * Save Vevent on the database
  *
- * @param {{uid, summary, organizer, dtstart, dtstamp}} params
+ * @param {{uid, summary, organizer, dtstart, dtstamp, optional}} params
+ * @param {{string}} [params.optional=void]
  */
 const saveVEvent = params => {
   return new Promise((resolve, reject) => {
@@ -14,7 +15,7 @@ const saveVEvent = params => {
     TempVevent.dtstart = params.dtstart;
     console.log(TempVevent.dtstart);
     TempVevent.dtstamp = params.dtstamp;
-
+    if (params.optional != "void") TempVevent.optional = params.optional
     TempVevent.save(err => {
       if (err) {
         console.log(err);

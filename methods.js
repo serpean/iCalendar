@@ -9,7 +9,7 @@ const veventController = require("./db/controllers/vevent");
  * @param organizer Name of the organizer of the event/calendar
  * @param summary Value of the summary which describes the event
  */
-const vEventPub = (dtstart, organizer, summary) => {
+const vEventPub = (dtstart, organizer, summary, ...optional) => {
   return new Promise((resolve, reject) => {
     const uid = Date.now();
     const dtstamp = new Date(uid);
@@ -18,22 +18,44 @@ const vEventPub = (dtstart, organizer, summary) => {
     cal.addVevent([dtstamp, dtstart, organizer, summary, uid]);
     //const ev = calendar.toJson().vcalendar.vevent;
     //const lastEvent = ev[ev.length - 1];
-    const params = {
-      uid: uid,
-      summary: summary,
-      organizer: organizer,
-      dtstart: dtstart,
-      dtstamp: dtstamp
-    };
-    veventController
-      .saveVEvent(params)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        console.log(err);
-        if (err) reject(err);
-      });
+    
+    if (optional.length > 0) {
+      const params = {
+        uid: uid,
+        summary: summary,
+        organizer: organizer,
+        dtstart: dtstart,
+        dtstamp: dtstamp,
+        optional: optional[0]
+      };
+      veventController
+        .saveVEvent(params)
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          console.log(err);
+          if (err) reject(err);
+        });
+    }
+    else {
+      const params = {
+        uid: uid,
+        summary: summary,
+        organizer: organizer,
+        dtstart: dtstart,
+        dtstamp: dtstamp
+      };
+      veventController
+        .saveVEvent(params)
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          console.log(err);
+          if (err) reject(err);
+        });
+    }
   });
 };
 
